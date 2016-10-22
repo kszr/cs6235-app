@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1029232657248",
+    "project_id": "lost-and-found-3d575"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029232657248:android:3f5de867378cd737",
+        "android_client_info": {
+          "package_name": "edu.gatech.lost_and_found"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029232657248-vmfjdgemfosj1ubrptmjrt0jncq5qkcb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.gatech.lost_and_found",
+            "certificate_hash": "1EC01DC3FDCB12D1736B9490C1CD2661064E96A7"
+          }
+        },
+        {
+          "client_id": "1029232657248-rv2j0tv54a0ag3fvd7k5dhjoc11ask7h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVhTgbbWz3r9I0qsCCtyBJ-w5aa9mZ7Wo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
