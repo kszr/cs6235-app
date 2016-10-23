@@ -12,4 +12,9 @@
     <string name="button_lost">Lost Object</string>
     <string name="button_found">Found Object</string>
     <string name="home_page_text">Report a...</string>
+    <string name="lost_page">Report lost object</string>
+    <string name="found_page">Report found object</string>
+    <string name="step1">Step 1:</string>
+    <string name="step2">Take a picture</string>
+    <string name="button_camera_description">Start camera</string>
 </resources>

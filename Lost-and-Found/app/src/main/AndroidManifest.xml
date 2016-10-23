@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.gatech.lost_and_found">
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -21,17 +22,18 @@
 
         <activity
             android:name=".HomePageActivity"
-            android:label="@string/home_page">
+            android:label="@string/home_page"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
             android:name=".LostActivity"
-            android:label="@string/home_page">
+            android:label="@string/lost_page">
         </activity>
 
         <activity
             android:name=".FoundActivity"
-            android:label="@string/home_page">
+            android:label="@string/found_page">
         </activity>
 
     </application>
