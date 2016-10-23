@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG,"Login button was clicked.");
                 signIn();
             }
         });
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
             startActivityForResult(intent, HOME_PAGE_CODE);
         } else {
-
+            Log.e(TAG,"handleSignInResult: Could not able to sign in.");
         }
     }
 
