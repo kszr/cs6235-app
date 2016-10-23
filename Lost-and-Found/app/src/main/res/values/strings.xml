@@ -8,4 +8,8 @@
     <string name="desc_google_icon">Google Logo</string>
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="loading">Loading...</string>
+    <string name="home_page">Home Page</string>
+    <string name="button_lost">Lost Object</string>
+    <string name="button_found">Found Object</string>
+    <string name="home_page_text">Report a...</string>
 </resources>
