@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lost-and-Found</string>
+    <string name="app_name">Lost and Found</string>
     <string name="action_settings">Settings</string>
     <string name="sign_out">Signed Out</string>
     <string name="disconnect">Disconnect</string>
@@ -15,6 +15,10 @@
     <string name="lost_page">Report lost object</string>
     <string name="found_page">Report found object</string>
     <string name="step1">Step 1:</string>
-    <string name="step2">Take a picture</string>
+    <string name="step2">Step 2:</string>
     <string name="button_camera_description">Start camera</string>
+    <string name="step1_text">Take a picture</string>
+    <string name="step2_text">At this point you can take the object to a nearby lost-and-found or leave it where it is.</string>
+    <string name="lost_and_found_button_text">Lost-and-Found</string>
+    <string name="leave_object_button">Leave Object</string>
 </resources>

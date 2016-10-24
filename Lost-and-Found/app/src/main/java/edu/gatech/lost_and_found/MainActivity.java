@@ -1,8 +1,12 @@
 package edu.gatech.lost_and_found;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +24,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -32,10 +39,19 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
+    private final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
+    private static String[] PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.INTERNET,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        verifyPermissions();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -145,12 +161,33 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
     @Override
     public void onClick(View v) {
 
+    }
+
+    private void verifyPermissions() {
+        if(!allPermissionsGranted()) {
+            for(String permission : PERMISSIONS) {
+                if(!(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED)) {
+                    ActivityCompat.requestPermissions(
+                            this,
+                            new String[]{permission},
+                            1
+                    );
+                }
+            }
+        }
+    }
+
+    private boolean allPermissionsGranted() {
+        for(String permission : PERMISSIONS)
+            if(!(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED))
+                return false;
+        return true;
     }
 }

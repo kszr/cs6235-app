@@ -10,31 +10,72 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:text="@string/step1"
-        android:gravity="center"
+        android:gravity="left"
         android:textColor="@android:color/primary_text_light"
         android:textSize="32sp" />
 
     <TextView
-        android:id="@+id/step2"
+        android:id="@+id/step1_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
-        android:text="@string/step2"
-        android:gravity="center"
+        android:text="@string/step1_text"
+        android:gravity="left"
         android:textColor="@android:color/secondary_text_light"
         android:textSize="24sp" />
 
     <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
         android:contentDescription="@string/button_camera_description"
         android:id="@+id/button_camera"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:paddingLeft="20dp"
-        android:layout_centerHorizontal="false"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:background="?android:attr/selectableItemBackground"
         android:src="@drawable/camera"
+        android:layout_marginBottom="10dp"
         style="?android:attr/buttonStyleSmall" />
+
+    <TextView
+        android:id="@+id/step2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="@string/step2"
+        android:gravity="left"
+        android:textColor="@android:color/primary_text_light"
+        android:visibility="gone"
+        android:textSize="32sp" />
+
+    <TextView
+        android:id="@+id/step2_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:text="@string/step2_text"
+        android:gravity="left"
+        android:textColor="@android:color/secondary_text_light"
+        android:visibility="gone"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/lost_and_found_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="@string/lost_and_found_button_text"
+        android:layout_gravity="left"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/keep_object_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/leave_object_button"
+        android:layout_marginLeft="20dp"
+        android:layout_gravity="left"
+        android:visibility="gone"/>
 
 </LinearLayout>
