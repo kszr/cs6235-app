@@ -18,7 +18,9 @@
     <string name="step2">Step 2:</string>
     <string name="button_camera_description">Start camera</string>
     <string name="step1_text">Take a picture</string>
-    <string name="step2_text">At this point you can take the object to a nearby lost-and-found or leave it where it is.</string>
-    <string name="lost_and_found_button_text">Lost-and-Found</string>
+    <string name="step2_text">At this point you can turn the object in at a nearby lost-and-found or leave it where it is. Please select an option below.</string>
+    <string name="lost_and_found_button_text">Turn object in</string>
     <string name="leave_object_button">Leave Object</string>
+    <string name="maps_page">Maps</string>
+    <string name="found_and_turn_in_page">Turn object in</string>
 </resources>

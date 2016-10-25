@@ -61,7 +61,7 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/lost_and_found_button"
+        android:id="@+id/turn_in_object_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -70,7 +70,7 @@
         android:visibility="gone"/>
 
     <Button
-        android:id="@+id/keep_object_button"
+        android:id="@+id/leave_object_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/leave_object_button"

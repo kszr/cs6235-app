@@ -1,5 +1,6 @@
 package edu.gatech.lost_and_found;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -52,9 +53,9 @@ public class HomePageActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == LOST_ACTIVITY) {
+        if(requestCode == LOST_ACTIVITY && resultCode == Activity.RESULT_OK) {
 
-        } else if(requestCode == FOUND_ACTIVITY) {
+        } else if(requestCode == FOUND_ACTIVITY && resultCode == Activity.RESULT_OK) {
 
         }
     }

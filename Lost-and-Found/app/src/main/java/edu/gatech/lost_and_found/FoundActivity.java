@@ -1,12 +1,10 @@
 package edu.gatech.lost_and_found;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +21,8 @@ public class FoundActivity extends AppCompatActivity {
     private static final String TAG = "FoundActivity";
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int CAMERA_ACTIVITY = 0;
+    private static final int FOUND_AND_TURN_IN = 1;
+    private static final int FOUND_AND_LEAVE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +41,21 @@ public class FoundActivity extends AppCompatActivity {
             }
         });
 
-        Button lost_and_found = (Button) findViewById(R.id.lost_and_found_button);
+        Button lost_and_found = (Button) findViewById(R.id.turn_in_object_button);
         assert lost_and_found != null;
         lost_and_found.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(TAG, "Clicked 'Lost and Found'.");
+                Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
+                startActivityForResult(intent, FOUND_AND_TURN_IN);
             }
         });
 
-        Button keep_object = (Button) findViewById(R.id.keep_object_button);
+        Button keep_object = (Button) findViewById(R.id.leave_object_button);
         assert keep_object != null;
         keep_object.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Clicked 'Keep Object'.");
+                Log.d(TAG, "Clicked 'Leave Object'.");
             }
         });
     }
@@ -103,13 +105,17 @@ public class FoundActivity extends AppCompatActivity {
             assert step2_text != null;
             step2_text.setVisibility(View.VISIBLE);
 
-            Button lost_and_found = (Button) findViewById(R.id.lost_and_found_button);
+            Button lost_and_found = (Button) findViewById(R.id.turn_in_object_button);
             assert lost_and_found != null;
             lost_and_found.setVisibility(View.VISIBLE);
 
-            Button keep_object = (Button) findViewById(R.id.keep_object_button);
+            Button keep_object = (Button) findViewById(R.id.leave_object_button);
             assert keep_object != null;
             keep_object.setVisibility(View.VISIBLE);
+        } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
+
+        } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
+
         }
     }
 }
