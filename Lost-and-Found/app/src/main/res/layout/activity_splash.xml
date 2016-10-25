@@ -11,6 +11,6 @@
         android:id="@+id/splash_screen"
         android:layout_marginTop="-40dp"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:src="@drawable/lf" />
+        android:src="@drawable/logo" />
 
 </FrameLayout>
