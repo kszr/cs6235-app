@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.
@@ -26,10 +27,13 @@ public class FoundActivity extends AppCompatActivity {
     private static final int CAMERA_ACTIVITY = 0;
     private static final int FOUND_AND_TURN_IN = 1;
     private static final int FOUND_AND_LEAVE = 2;
+    private static final int SUBMIT = 3;
 
     private Bitmap photo = null;
     private Double lat = null;
     private Double lon = null;
+
+    private Toast universalToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +98,37 @@ public class FoundActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
             getImageData(data);
-            setButtonsStep2();
+
+            ImageButton cameraButton = (ImageButton) findViewById(R.id.button_camera);
+            assert cameraButton != null;
+            cameraButton.setClickable(false);
+
+            TextView step2 = (TextView) findViewById(R.id.step2);
+            assert step2 != null;
+            step2.setVisibility(View.VISIBLE);
+
+            TextView step2_text = (TextView) findViewById(R.id.step2_text);
+            assert step2_text != null;
+            step2_text.setVisibility(View.VISIBLE);
+
+            Button lost_and_found = (Button) findViewById(R.id.turn_in_object_button);
+            assert lost_and_found != null;
+            lost_and_found.setVisibility(View.VISIBLE);
+
+            Button keep_object = (Button) findViewById(R.id.leave_object_button);
+            assert keep_object != null;
+            keep_object.setVisibility(View.VISIBLE);
         } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
 
         } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
+            Button submit_button = (Button) findViewById(R.id.submit_found_button);
+            assert submit_button != null;
+            submit_button.setVisibility(View.VISIBLE);
 
         }
     }
@@ -126,28 +152,15 @@ public class FoundActivity extends AppCompatActivity {
 
         Log.d(TAG,"Captured image.");
         Log.d(TAG,"Latitude: " + lat.toString() + "; Longitude: " + lon.toString());
+
+        makeToast("Lat: "+lat.toString()+"; Lon: " + lon.toString(), Toast.LENGTH_LONG);
     }
 
-    private void setButtonsStep2() {
-        ImageButton cameraButton = (ImageButton) findViewById(R.id.button_camera);
-        assert cameraButton != null;
-        cameraButton.setClickable(false);
-
-        TextView step2 = (TextView) findViewById(R.id.step2);
-        assert step2 != null;
-        step2.setVisibility(View.VISIBLE);
-
-        TextView step2_text = (TextView) findViewById(R.id.step2_text);
-        assert step2_text != null;
-        step2_text.setVisibility(View.VISIBLE);
-
-        Button lost_and_found = (Button) findViewById(R.id.turn_in_object_button);
-        assert lost_and_found != null;
-        lost_and_found.setVisibility(View.VISIBLE);
-
-        Button keep_object = (Button) findViewById(R.id.leave_object_button);
-        assert keep_object != null;
-        keep_object.setVisibility(View.VISIBLE);
+    private void makeToast(String text, int length) {
+        if(universalToast != null)
+            universalToast.cancel();
+        universalToast = Toast.makeText(this, text, length);
+        universalToast.show();
     }
 
 }

@@ -50,7 +50,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == LOST_ACTIVITY && resultCode == Activity.RESULT_OK) {
