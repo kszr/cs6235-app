@@ -67,7 +67,12 @@ public class FoundActivity extends AppCompatActivity {
         keep_object.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(TAG, "Clicked 'Leave Object'.");
+
+                Button submit_button = (Button) findViewById(R.id.submit_found_button);
+                assert submit_button != null;
+                submit_button.setVisibility(View.VISIBLE);
             }
+
         });
     }
 
@@ -126,10 +131,10 @@ public class FoundActivity extends AppCompatActivity {
         } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
 
         } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
+            // Not sure if this should be here or in found_and_leave's onClickListener().
             Button submit_button = (Button) findViewById(R.id.submit_found_button);
             assert submit_button != null;
             submit_button.setVisibility(View.VISIBLE);
-
         }
     }
 
