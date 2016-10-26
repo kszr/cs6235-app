@@ -90,17 +90,6 @@ public class FoundActivity extends AppCompatActivity {
         startActivityForResult(intent, CAMERA_ACTIVITY);
     }
 
-    /**
-     * Allows the user to view a thumbnail of the image that was just taken and
-     * continue, retake the image, or cancel out accordingly.
-     */
-    private void promptImageOkay() {
-        if (true) {
-
-        } else {
-
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -131,10 +120,7 @@ public class FoundActivity extends AppCompatActivity {
         } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
 
         } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
-            // Not sure if this should be here or in found_and_leave's onClickListener().
-            Button submit_button = (Button) findViewById(R.id.submit_found_button);
-            assert submit_button != null;
-            submit_button.setVisibility(View.VISIBLE);
+
         }
     }
 

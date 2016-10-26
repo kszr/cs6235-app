@@ -22,11 +22,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
@@ -40,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
-    private final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
     private static String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
             Manifest.permission.ACCESS_FINE_LOCATION
