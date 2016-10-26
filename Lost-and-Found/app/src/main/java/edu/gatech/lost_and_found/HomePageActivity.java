@@ -11,7 +11,7 @@ import android.widget.Button;
 /**
  * Created by abhishekchatterjee on 10/22/16.
  */
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends CustomActionBarActivity {
     private static final String TAG = "HomePageActivity";
     private static final int LOST_ACTIVITY = 0;
     private static final int FOUND_ACTIVITY = 1;
@@ -32,7 +32,7 @@ public class HomePageActivity extends AppCompatActivity {
         assert lostButton != null;
         lostButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG,"Clicked 'Lost Activity'.");
+                Log.i(TAG,"Clicked 'Lost Activity'.");
                 Intent intent = new Intent(HomePageActivity.this, LostActivity.class);
                 startActivityForResult(intent, LOST_ACTIVITY);
             }
@@ -42,7 +42,7 @@ public class HomePageActivity extends AppCompatActivity {
         assert foundButton != null;
         foundButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG,"Clicked 'Found Activity'.");
+                Log.i(TAG,"Clicked 'Found Activity'.");
                 Intent intent = new Intent(HomePageActivity.this, FoundActivity.class);
                 startActivityForResult(intent, FOUND_ACTIVITY);
             }

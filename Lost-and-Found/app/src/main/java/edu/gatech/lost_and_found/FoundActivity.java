@@ -21,7 +21,7 @@ import android.widget.Toast;
 /**
  * Created by abhishekchatterjee on 10/23/16.
  */
-public class FoundActivity extends AppCompatActivity {
+public class FoundActivity extends CustomActionBarActivity {
     private static final String TAG = "FoundActivity";
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int CAMERA_ACTIVITY = 0;
@@ -47,7 +47,7 @@ public class FoundActivity extends AppCompatActivity {
         assert cameraButton != null;
         cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Clicked camera icon.");
+                Log.i(TAG, "Clicked camera icon.");
                 startCameraActivity();
             }
         });
@@ -56,7 +56,7 @@ public class FoundActivity extends AppCompatActivity {
         assert lost_and_found != null;
         lost_and_found.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Clicked 'Lost and Found'.");
+                Log.i(TAG, "Clicked 'Lost and Found'.");
                 Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
                 startActivityForResult(intent, FOUND_AND_TURN_IN);
             }
@@ -66,7 +66,7 @@ public class FoundActivity extends AppCompatActivity {
         assert keep_object != null;
         keep_object.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d(TAG, "Clicked 'Leave Object'.");
+                Log.i(TAG, "Clicked 'Leave Object'.");
 
                 Button submit_button = (Button) findViewById(R.id.submit_found_button);
                 assert submit_button != null;
@@ -141,7 +141,7 @@ public class FoundActivity extends AppCompatActivity {
         lat = location.getLatitude();
         lon = location.getLongitude();
 
-        Log.d(TAG,"Captured image.");
+        Log.i(TAG,"Captured image.");
         Log.d(TAG,"Latitude: " + lat.toString() + "; Longitude: " + lon.toString());
 
         makeToast("Lat: "+lat.toString()+"; Lon: " + lon.toString(), Toast.LENGTH_LONG);

@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 /**
  * Created by abhishekchatterjee on 10/24/16.
  */
-public class FoundAndTurnInActivity extends AppCompatActivity {
+public class FoundAndTurnInActivity extends CustomActionBarActivity {
     private static final String TAG = "FoundAndKeepActivity";
 
     @Override
