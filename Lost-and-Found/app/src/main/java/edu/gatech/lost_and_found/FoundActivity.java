@@ -32,6 +32,7 @@ public class FoundActivity extends CustomActionBarActivity {
     private Bitmap photo = null;
     private Double lat = null;
     private Double lon = null;
+    private boolean leaveObject = false;
 
     private Toast universalToast;
 
@@ -143,8 +144,6 @@ public class FoundActivity extends CustomActionBarActivity {
 
         Log.i(TAG,"Captured image.");
         Log.d(TAG,"Latitude: " + lat.toString() + "; Longitude: " + lon.toString());
-
-        makeToast("Lat: "+lat.toString()+"; Lon: " + lon.toString(), Toast.LENGTH_LONG);
     }
 
     private void makeToast(String text, int length) {
