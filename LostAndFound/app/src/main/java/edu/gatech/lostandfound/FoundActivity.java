@@ -126,6 +126,7 @@ public class FoundActivity extends CustomActionBarActivity {
 
     private void getImageData(Intent data) {
         photo = (Bitmap) data.getExtras().get("data");
+        Log.i(TAG, "Captured image.");
 
         /**
          * Android does not support Exif information on byte streams, and lat/lon information
@@ -137,12 +138,25 @@ public class FoundActivity extends CustomActionBarActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        lat = location.getLatitude();
-        lon = location.getLongitude();
 
-        Log.i(TAG,"Captured image.");
-        Log.d(TAG,"Latitude: " + lat.toString() + "; Longitude: " + lon.toString());
+        Location location;
+        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        else if(lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+            location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        else location = null;
+
+        Log.d(TAG, "Location null: " + (location == null));
+
+        if(location == null) {
+            lat = null;
+            lon = null;
+        } else {
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+        }
+
+        Log.d(TAG,"Latitude: " + (lat == null ? "null" : lat.toString()) + "; Longitude: " + (lon == null ? "null" : lon.toString()));
     }
 
     private void makeToast(String text, int length) {
