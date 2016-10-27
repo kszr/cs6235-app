@@ -54,7 +54,8 @@ public class CustomActionBarActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.sign_out) {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(TAG, "sign_out");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("sign_out",false);
             startActivity(intent);
             return true;
         } else if (id == R.id.view_profile) {

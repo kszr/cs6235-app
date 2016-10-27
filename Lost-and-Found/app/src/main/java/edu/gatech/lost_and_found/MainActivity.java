@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
@@ -72,18 +74,19 @@ public class MainActivity extends AppCompatActivity implements
                 signIn();
             }
         });
+
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
+    private void cachedSignIn() {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
             Log.i(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
         } else {
+            SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+            assert signInButton != null;
+            signInButton.setVisibility(View.GONE);
             showProgressDialog();
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
@@ -93,6 +96,17 @@ public class MainActivity extends AppCompatActivity implements
                 }
             });
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Intent intent = getIntent();
+        boolean sign_out = intent.getBooleanExtra("sign_out", true);
+
+        if(sign_out)
+            cachedSignIn();
     }
 
     @Override
@@ -123,6 +137,16 @@ public class MainActivity extends AppCompatActivity implements
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.i(TAG, "Signed out.");
+                    }
+                });
     }
 
     @Override
@@ -161,6 +185,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void verifyPermissions() {
