@@ -3,8 +3,10 @@ package edu.gatech.lostandfound;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -77,6 +79,39 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Intent intent = getIntent();
+
+        boolean signed_in = intent.getBooleanExtra("sign_out", true); // False, if the user clicked "sign out" in the menu.
+        boolean signed_in_default = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("signed_in",false); // False, if the user was signed out when the app was last closed.
+
+        if(signed_in && signed_in_default) {
+            cachedSignIn();
+        } else {
+            // Since the user signed out, make sure that this preference is remembered the next time the app is opened.
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+            editor.putBoolean("signed_in",false);
+            editor.apply();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if(result.isSuccess()) {
+                Log.i(TAG, "Signed in: Going to Home Page");
+                hideProgressDialog();
+                handleSignInResult(result);
+            }
+        }
+    }
+
     private void cachedSignIn() {
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
@@ -98,30 +133,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Intent intent = getIntent();
-        boolean sign_out = intent.getBooleanExtra("sign_out", true);
-
-        if(sign_out)
-            cachedSignIn();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if(result.isSuccess()) {
-                Log.i(TAG, "Signed in: Going to Home Page");
-                hideProgressDialog();
-                handleSignInResult(result);
-            }
-        }
-    }
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.i(TAG, "handleSignInResult:" + result.isSuccess());
@@ -138,18 +149,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void signIn() {
+        // Remember to stay signed in the next time the app is opened.
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+        editor.putBoolean("signed_in",true);
+        editor.apply();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        Log.i(TAG, "Signed out.");
-                    }
-                });
     }
 
     @Override
