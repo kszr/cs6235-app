@@ -130,7 +130,10 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
             startActivityForResult(intent, HOME_PAGE_CODE);
         } else {
-            Log.e(TAG,"handleSignInResult: Could not able to sign in.");
+            Log.e(TAG,"handleSignInResult: Could not able to cache sign in.");
+            SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+            assert signInButton != null;
+            signInButton.setVisibility(View.VISIBLE);
         }
     }
 
