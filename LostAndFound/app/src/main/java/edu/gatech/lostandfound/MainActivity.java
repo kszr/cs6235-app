@@ -29,9 +29,8 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
-
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+    
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
     private static final int HOME_PAGE_CODE = 1;
