@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1029232657248",
-    "project_id": "lost-and-found-3d575"
+    "project_number": "80890421584",
+    "project_id": "firebase-lostandfound"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1029232657248:android:3f5de867378cd737",
+        "mobilesdk_app_id": "1:80890421584:android:73946db66dd531f3",
         "android_client_info": {
-          "package_name": "edu.gatech.lost_and_found"
+          "package_name": "edu.gatech.lostandfound"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1029232657248-vmfjdgemfosj1ubrptmjrt0jncq5qkcb.apps.googleusercontent.com",
+          "client_id": "80890421584-0scn4ava8at7js2uri7mhb3g24cechnt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "edu.gatech.lost_and_found",
+            "package_name": "edu.gatech.lostandfound",
             "certificate_hash": "1EC01DC3FDCB12D1736B9490C1CD2661064E96A7"
           }
         },
         {
-          "client_id": "1029232657248-rv2j0tv54a0ag3fvd7k5dhjoc11ask7h.apps.googleusercontent.com",
+          "client_id": "80890421584-4k1dlr931n5gk47e554molnfcvquulth.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCVhTgbbWz3r9I0qsCCtyBJ-w5aa9mZ7Wo"
+          "current_key": "AIzaSyAujcbuC3TzGgwCmfAdYJ0Vlgm0jjsOZ_4"
         }
       ],
       "services": {
