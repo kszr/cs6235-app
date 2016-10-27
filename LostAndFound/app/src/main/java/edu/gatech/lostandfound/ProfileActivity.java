@@ -1,4 +1,4 @@
-package edu.gatech.lost_and_found;
+package edu.gatech.lostandfound;
 
 import android.os.Bundle;
 

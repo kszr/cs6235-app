@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "edu.gatech.lost_and_found"
+        applicationId "edu.gatech.lostandfound"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1

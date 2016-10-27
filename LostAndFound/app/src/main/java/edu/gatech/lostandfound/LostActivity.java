@@ -1,7 +1,6 @@
-package edu.gatech.lost_and_found;
+package edu.gatech.lostandfound;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.

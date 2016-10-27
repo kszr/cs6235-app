@@ -8,7 +8,7 @@
         android:orientation="vertical"
         android:weightSum="4"
         android:fitsSystemWindows="true"
-        tools:context="edu.gatech.lost_and_found.MainActivity">
+        tools:context="edu.gatech.lostandfound.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
