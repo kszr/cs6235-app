@@ -56,6 +56,11 @@
             android:label="@string/found_and_turn_in_page">
         </activity>
 
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/profile_page">
+        </activity>
+
     </application>
 
 </manifest>
