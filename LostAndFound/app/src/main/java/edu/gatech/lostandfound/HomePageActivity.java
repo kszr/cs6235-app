@@ -58,4 +58,9 @@ public class HomePageActivity extends CustomActionBarActivity {
 
         }
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }
