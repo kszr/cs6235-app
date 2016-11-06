@@ -139,12 +139,9 @@ public class FoundActivity extends CustomActionBarActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        Location location;
-        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        else if(lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(location == null)
             location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        else location = null;
 
         Log.d(TAG, "Location null: " + (location == null));
 
