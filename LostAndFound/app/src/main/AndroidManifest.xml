@@ -47,11 +47,6 @@
         </activity>
 
         <activity
-            android:name="edu.gatech.lostandfound.MapsActivity"
-            android:label="@string/maps_page">
-        </activity>
-
-        <activity
             android:name="edu.gatech.lostandfound.FoundAndTurnInActivity"
             android:label="@string/found_and_turn_in_page">
         </activity>
