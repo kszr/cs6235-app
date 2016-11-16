@@ -30,4 +30,6 @@
     <string name="signing_in">Signing in...</string>
     <string name="view_profile">View Profile</string>
     <string name="profile_page">Profile</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_goback">Go Back</string>
 </resources>
