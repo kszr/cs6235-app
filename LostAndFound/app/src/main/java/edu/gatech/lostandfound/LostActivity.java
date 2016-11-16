@@ -44,7 +44,6 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             }
         });
 
-
         final Button buttonConf = (Button) findViewById(R.id.button_confirm);
         assert buttonConf != null;
         buttonConf.setOnClickListener(new View.OnClickListener() {
@@ -64,15 +63,22 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                Log.d(TAG,"place: " + place.getName());
+            Place place = PlacePicker.getPlace(data, this);
+            Log.d(TAG,"place: " + place.getName());
 
-                String sourceText = "Confirm object lost at <b>" + place.getName() + "</b>?";
-                TextView confText = (TextView) findViewById(R.id.lost_confirm_text);
-                assert confText != null;
-                confText.setText(Html.fromHtml(sourceText));
-            }
+            String sourceText = "Confirm object lost at <b>" + place.getName() + "</b>?";
+            TextView confText = (TextView) findViewById(R.id.lost_confirm_text);
+            assert confText != null;
+            confText.setVisibility(View.VISIBLE);
+            confText.setText(Html.fromHtml(sourceText));
+
+            Button buttonConf = (Button) findViewById(R.id.button_confirm);
+            assert buttonConf != null;
+            buttonConf.setVisibility(View.VISIBLE);
+
+            Button buttonGoback = (Button) findViewById(R.id.button_goback);
+            assert buttonGoback != null;
+            buttonGoback.setVisibility(View.VISIBLE);
         }
     }
 

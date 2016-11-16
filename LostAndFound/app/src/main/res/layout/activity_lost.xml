@@ -10,12 +10,12 @@
         android:id="@+id/lost_confirm_text"
         android:layout_weight="1"
         android:ellipsize="none"
-        android:maxLines="100"
         android:paddingTop="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:textColor="@android:color/primary_text_light"
         android:textSize="18sp"
+        android:visibility="gone"
         android:scrollHorizontally="false"/>
 
     <Button
@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_confirm"
         android:id="@+id/button_confirm"
+        android:visibility="gone"
         android:layout_gravity="center_horizontal" />
 
     <Button
@@ -30,6 +31,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_goback"
         android:id="@+id/button_goback"
+        android:visibility="gone"
         android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
