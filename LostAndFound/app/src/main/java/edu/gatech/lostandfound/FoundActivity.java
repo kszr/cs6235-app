@@ -58,6 +58,8 @@ public class FoundActivity extends CustomActionBarActivity {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Lost and Found'.");
                 Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
+                intent.putExtra("lat",lat);
+                intent.putExtra("lon",lon);
                 startActivityForResult(intent, FOUND_AND_TURN_IN);
             }
         });
@@ -153,7 +155,7 @@ public class FoundActivity extends CustomActionBarActivity {
             lon = location.getLongitude();
         }
 
-        Log.d(TAG,"Latitude: " + (lat == null ? "null" : lat.toString()) + "; Longitude: " + (lon == null ? "null" : lon.toString()));
+        Log.d(TAG,"latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
     }
 
     private void makeToast(String text, int length) {
