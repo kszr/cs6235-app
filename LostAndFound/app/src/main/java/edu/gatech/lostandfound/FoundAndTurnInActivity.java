@@ -55,7 +55,4 @@ public class FoundAndTurnInActivity extends CustomActionBarActivity implements O
         //Zoom in and animate the camera.
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
-
-
-
 }

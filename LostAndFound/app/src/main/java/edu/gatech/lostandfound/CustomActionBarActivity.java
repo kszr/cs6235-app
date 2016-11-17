@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 /**
  * Created by abhishekchatterjee on 10/26/16.
  */
 public class CustomActionBarActivity extends AppCompatActivity {
     private static final String TAG = "CustomActionBarActivity";
+    private Toast universalToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,4 +54,10 @@ public class CustomActionBarActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    protected void makeToast(String text, int length) {
+        if(universalToast != null)
+            universalToast.cancel();
+        universalToast = Toast.makeText(this, text, length);
+        universalToast.show();
+    }
 }

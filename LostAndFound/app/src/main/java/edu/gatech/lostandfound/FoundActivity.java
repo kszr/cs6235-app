@@ -33,8 +33,6 @@ public class FoundActivity extends CustomActionBarActivity {
     private Double lon = null;
     private boolean leaveObject = false;
 
-    private Toast universalToast;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,12 +155,4 @@ public class FoundActivity extends CustomActionBarActivity {
 
         Log.d(TAG,"latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
     }
-
-    private void makeToast(String text, int length) {
-        if(universalToast != null)
-            universalToast.cancel();
-        universalToast = Toast.makeText(this, text, length);
-        universalToast.show();
-    }
-
 }
