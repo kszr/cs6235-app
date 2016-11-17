@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -27,11 +28,20 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
 
     private GoogleApiClient mGoogleApiClient;
     private boolean confirm = false;
+    private boolean onMap = false;
+    private boolean visible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost);
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
 
         startPlacePicker();
 
@@ -40,6 +50,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
         buttonGoback.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Go Back'.");
+                toggleVisible();
                 startPlacePicker();
             }
         });
@@ -64,32 +75,51 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
             Place place = PlacePicker.getPlace(data, this);
-            Log.d(TAG,"place: " + place.getName());
+            Log.d(TAG, "place: " + place.getName());
 
             String sourceText = "Confirm object lost at <b>" + place.getName() + "</b>?";
             TextView confText = (TextView) findViewById(R.id.lost_confirm_text);
             assert confText != null;
-            confText.setVisibility(View.VISIBLE);
             confText.setText(Html.fromHtml(sourceText));
 
-            Button buttonConf = (Button) findViewById(R.id.button_confirm);
+            toggleVisible();
+
+            onMap = false;
+        }
+    }
+
+    private void toggleVisible() {
+        TextView confText = (TextView) findViewById(R.id.lost_confirm_text);
+        Button buttonConf = (Button) findViewById(R.id.button_confirm);
+        Button buttonGoback = (Button) findViewById(R.id.button_goback);
+
+        if(!visible) {
+            assert confText != null;
+            confText.setVisibility(View.VISIBLE);
+
             assert buttonConf != null;
             buttonConf.setVisibility(View.VISIBLE);
 
-            Button buttonGoback = (Button) findViewById(R.id.button_goback);
             assert buttonGoback != null;
             buttonGoback.setVisibility(View.VISIBLE);
+
+            visible = false;
+        } else {
+            assert confText != null;
+            confText.setVisibility(View.GONE);
+
+            assert buttonConf != null;
+            buttonConf.setVisibility(View.GONE);
+
+            assert buttonGoback != null;
+            buttonGoback.setVisibility(View.GONE);
+
+            visible = false;
         }
     }
 
     private void startPlacePicker() {
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
-
+        onMap = true;
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
             startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
@@ -99,4 +129,21 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if(onMap)
+            this.finish();
+        else super.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            if(onMap)
+                this.finish();
+
+        return super.onKeyDown(keyCode, event);
+    }
+
 }
