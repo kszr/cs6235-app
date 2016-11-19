@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,9 +21,9 @@ public class PotentialFoundDataSource {
     private SQLiteDatabase database;
     private PotentialFoundSQLiteHelper dbHelper;
     private String[] allColumns = { PotentialFoundSQLiteHelper.COLUMN_ID,
+            PotentialFoundSQLiteHelper.COLUMN_FILENAME,
             PotentialFoundSQLiteHelper.COLUMN_DATE,
-            PotentialFoundSQLiteHelper.COLUMN_LATLNG,
-            PotentialFoundSQLiteHelper.COLUMN_FILENAME};
+            PotentialFoundSQLiteHelper.COLUMN_LATLNG};
 
     public PotentialFoundDataSource(Context context) {
         dbHelper = new PotentialFoundSQLiteHelper(context);
@@ -39,9 +41,11 @@ public class PotentialFoundDataSource {
                                               Date date,
                                               LatLng latLng) {
         ContentValues values = new ContentValues();
-        values.put(PotentialFoundSQLiteHelper.COLUMN_FILENAME, filename);
+        values.put(PotentialFoundSQLiteHelper.COLUMN_FILENAME,filename);
         values.put(PotentialFoundSQLiteHelper.COLUMN_DATE,date.toString());
-        values.put(PotentialFoundSQLiteHelper.COLUMN_LATLNG, latLng.toString());
+
+        String llstring = latLng.latitude+","+latLng.longitude;
+        values.put(PotentialFoundSQLiteHelper.COLUMN_LATLNG,llstring);
 
         long insertId = database.insert(PotentialFoundSQLiteHelper.TABLE_POTENTIAL_FOUND, null,
                 values);

@@ -13,13 +13,18 @@
         android:title="@string/view_profile"
         />
     <item
-        android:id="@+id/sign_out"
+        android:id="@+id/go_to_potential_list"
         android:orderInCategory="100"
-        android:title="@string/sign_out"
+        android:title="@string/go_to_potential_list"
         />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sign_out"
+        android:orderInCategory="100"
+        android:title="@string/sign_out"
+        />
 </menu>

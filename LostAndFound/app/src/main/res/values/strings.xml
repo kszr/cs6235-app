@@ -32,4 +32,8 @@
     <string name="profile_page">Profile</string>
     <string name="button_confirm">Confirm</string>
     <string name="button_goback">Go Back</string>
+    <string name="potential_found_list">Potential Found Objects</string>
+    <string name="go_to_potential_list">Potential Found Objects</string>
+    <string name="button_claim">Claim Object?</string>
+    <string name="image_activity">Object Info</string>
 </resources>

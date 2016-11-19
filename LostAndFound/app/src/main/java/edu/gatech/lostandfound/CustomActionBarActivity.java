@@ -49,6 +49,10 @@ public class CustomActionBarActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.go_to_potential_list) {
+            Intent intent = new Intent(this, PotentialFoundListActivity.class);
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
