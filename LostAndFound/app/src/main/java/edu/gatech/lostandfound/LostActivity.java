@@ -2,7 +2,9 @@ package edu.gatech.lostandfound;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,17 +21,20 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
+import java.util.Date;
+
 /**
  * Created by abhishekchatterjee on 10/23/16.
  */
 public class LostActivity extends CustomActionBarActivity implements OnConnectionFailedListener {
     private static final String TAG = "LostActivity";
-    private static final int PLACE_PICKER_REQUEST = 1;
+    private static final int PLACE_PICKER_REQUEST = 0;
 
     private GoogleApiClient mGoogleApiClient;
     private boolean confirm = false;
     private boolean onMap = false;
     private boolean visible = false;
+    private Place selectedPlace = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,32 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
                 confirm = true;
                 buttonGoback.setClickable(false);
                 buttonConf.setClickable(false);
+
+                reportLostLocation();
             }
         });
+    }
+
+    private void reportLostLocation() {
+        if(!confirm || selectedPlace == null) {
+            Log.i(TAG,"Nothing to send to server.");
+            return;
+        }
+
+        new AsyncTask() {
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                // TODO: Send data to server here:
+                //       place,
+                //       date,
+                //       userid
+                Place place = selectedPlace;
+                Date date = new Date();
+                String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
+                return null;
+            }
+        }.execute();
     }
 
     @Override
@@ -72,6 +101,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
 
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
             Place place = PlacePicker.getPlace(data, this);
@@ -81,6 +111,8 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             TextView confText = (TextView) findViewById(R.id.lost_confirm_text);
             assert confText != null;
             confText.setText(Html.fromHtml(sourceText));
+
+            selectedPlace = place;
 
             toggleVisible();
 
@@ -132,6 +164,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
 
     @Override
     public void onBackPressed() {
+        selectedPlace = null;
         if(onMap)
             this.finish();
         else super.onBackPressed();
@@ -143,6 +176,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             if(onMap)
                 this.finish();
 
+        selectedPlace = null;
         return super.onKeyDown(keyCode, event);
     }
 
