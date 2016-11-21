@@ -180,7 +180,7 @@ public class FoundActivity extends CustomActionBarActivity {
                 if (out != null) {
                     out.close();
                 }
-                Log.d(TAG,"Saved image: " + MY_IMG_DIR+"/"+filename);
+                Log.d(TAG,"Saved image: " + MY_IMG_DIR + "/" + filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }

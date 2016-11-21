@@ -2,6 +2,7 @@ package edu.gatech.lostandfound;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -104,6 +105,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if(result.isSuccess()) {
                 Log.i(TAG, "Signed in: Going to Home Page");
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+                editor.putString("displayname",result.getSignInAccount().getDisplayName());
+                editor.putString("userid",result.getSignInAccount().getId());
+                editor.putString("email",result.getSignInAccount().getEmail());
+                editor.apply();
                 hideProgressDialog();
                 handleSignInResult(result);
             }
