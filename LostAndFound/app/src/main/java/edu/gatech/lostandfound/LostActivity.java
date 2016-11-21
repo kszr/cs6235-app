@@ -75,6 +75,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
     }
 
     private void reportLostLocation() {
+        Log.d(TAG,"reportLostLocation: selectedPlace == null? " + (selectedPlace==null));
         if(!confirm || selectedPlace == null) {
             Log.i(TAG,"Nothing to send to server.");
             return;
