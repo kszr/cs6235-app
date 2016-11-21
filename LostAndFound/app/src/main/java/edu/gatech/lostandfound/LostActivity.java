@@ -171,5 +171,4 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
 
         return super.onKeyDown(keyCode, event);
     }
-
 }

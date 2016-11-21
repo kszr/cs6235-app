@@ -6,10 +6,12 @@ import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -39,7 +41,11 @@ public class FoundAndTurnInActivity extends CustomActionBarActivity implements O
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnInfoWindowClickListener(getInfoWindowClickListener());
         LatLng position = new LatLng(lat, lon);
+
+        // TODO: Add markers for all the suggested places where the user may turn in
+        // the found object.
         googleMap.addMarker(new MarkerOptions()
                 .position(position)
                 .title("Marker"));
@@ -54,5 +60,14 @@ public class FoundAndTurnInActivity extends CustomActionBarActivity implements O
                 .zoom(17).build();
         //Zoom in and animate the camera.
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    private OnInfoWindowClickListener getInfoWindowClickListener() {
+        return new OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                // TODO: What happens when a marker is clicked?
+            }
+        };
     }
 }
