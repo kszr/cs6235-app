@@ -37,7 +37,16 @@ public class CustomActionBarActivity extends AppCompatActivity {
             Intent intent = new Intent(this, HomePageActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_settings) {
+//        } else if (id == R.id.action_settings) {
+//            // Action settings not currently part of menu.
+//            return true;
+        } else if (id == R.id.report_lost) {
+            Intent intent = new Intent(this, LostActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.report_found) {
+            Intent intent = new Intent(this, FoundActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.sign_out) {
             Intent intent = new Intent(this, MainActivity.class);

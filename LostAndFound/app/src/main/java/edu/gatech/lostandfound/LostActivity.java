@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -30,8 +31,6 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
     private static final String TAG = "LostActivity";
     private static final int PLACE_PICKER_REQUEST = 0;
 
-    private GoogleApiClient mGoogleApiClient;
-    private boolean confirm = false;
     private boolean onMap = false;
     private boolean visible = false;
     private Place selectedPlace = null;
@@ -41,12 +40,12 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost);
 
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
+        new GoogleApiClient
+            .Builder(this)
+            .addApi(Places.GEO_DATA_API)
+            .addApi(Places.PLACE_DETECTION_API)
+            .enableAutoManage(this, this)
+            .build();
 
         startPlacePicker();
 
@@ -65,10 +64,8 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
         buttonConf.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Confirm'.");
-                confirm = true;
                 buttonGoback.setClickable(false);
                 buttonConf.setClickable(false);
-
                 reportLostLocation();
             }
         });
@@ -76,7 +73,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
 
     private void reportLostLocation() {
         Log.d(TAG,"reportLostLocation: selectedPlace == null? " + (selectedPlace==null));
-        if(!confirm || selectedPlace == null) {
+        if(selectedPlace == null) {
             Log.i(TAG,"Nothing to send to server.");
             return;
         }
@@ -86,19 +83,19 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             @Override
             protected Object doInBackground(Object[] params) {
                 // TODO: Send data to server here:
+                //       userid,
                 //       place,
-                //       date,
-                //       userid
+                //       date.
+                String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
                 Place place = selectedPlace;
                 Date date = new Date();
-                String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
                 return null;
             }
         }.execute();
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
@@ -136,7 +133,7 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             assert buttonGoback != null;
             buttonGoback.setVisibility(View.VISIBLE);
 
-            visible = false;
+            visible = true;
         } else {
             assert confText != null;
             confText.setVisibility(View.GONE);
@@ -156,16 +153,13 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
             startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException e) {
-            e.printStackTrace();
-        } catch (GooglePlayServicesNotAvailableException e) {
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void onBackPressed() {
-        selectedPlace = null;
         if(onMap)
             this.finish();
         else super.onBackPressed();
@@ -177,7 +171,6 @@ public class LostActivity extends CustomActionBarActivity implements OnConnectio
             if(onMap)
                 this.finish();
 
-        selectedPlace = null;
         return super.onKeyDown(keyCode, event);
     }
 
