@@ -59,6 +59,8 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
 //    }
 
     private void setUpList() {
+        // TODO: Find a way to display image thumbnails in the list rather than text.
+
         final List<PotentialFoundObject> objectList = dataSource.getAllObjects();
         List<Bitmap> images = new ArrayList<>();
 
