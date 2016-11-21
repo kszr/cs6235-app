@@ -1,7 +1,10 @@
 package edu.gatech.lostandfound;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +14,10 @@ import android.widget.ListView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +30,7 @@ import edu.gatech.lostandfound.database.PotentialFoundObject;
 public class PotentialFoundListActivity extends CustomActionBarActivity {
     private static final String TAG = "PFLActivity";
     private static final int IMAGE_ACTIVITY = 0;
+    private static final String IMG_DIR = "myn"; // Change to "oth".
 
     private PotentialFoundDataSource dataSource;
 
@@ -53,24 +59,45 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
 //    }
 
     private void setUpList() {
-        List<PotentialFoundObject> objectList = dataSource.getAllObjects();
+        final List<PotentialFoundObject> objectList = dataSource.getAllObjects();
+        List<Bitmap> images = new ArrayList<>();
+
+        for(PotentialFoundObject object : objectList) {
+            String filename = object.getFilename();
+            Bitmap photo = getPhoto(filename);
+            images.add(photo);
+        }
 
         final ListView listView = (ListView) findViewById(R.id.potential_found_list);
 
-        ArrayAdapter<PotentialFoundObject> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, objectList);
+        ArrayAdapter<Bitmap> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, images);
+
         assert listView != null;
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> myAdapter, View myView, int myItemInt, long mylng) {
                 Log.d(TAG,"Clicked item no. " + myItemInt);
                 Intent intent = new Intent(PotentialFoundListActivity.this, ImageActivity.class);
-                intent.putExtra("filename", ((PotentialFoundObject) listView.getItemAtPosition(myItemInt)).getFilename());
-                intent.putExtra("date",((PotentialFoundObject) listView.getItemAtPosition(myItemInt)).getDate().toString());
-                intent.putExtra("latlng", ((PotentialFoundObject) listView.getItemAtPosition(myItemInt)).getLatLng().toString());
+                intent.putExtra("filename", objectList.get(myItemInt).getFilename());
+                intent.putExtra("date", objectList.get(myItemInt).getDate().toString());
+                intent.putExtra("latlng", objectList.get(myItemInt).getLatLng().toString());
                 startActivityForResult(intent, IMAGE_ACTIVITY);
             }
         });
 
         listView.setAdapter(arrayAdapter);
+    }
+
+    private Bitmap getPhoto(String filename) {
+        File mydir = this.getDir(IMG_DIR, Context.MODE_PRIVATE);
+        File f = new File(mydir, filename);
+        if (!f.exists()) {
+            Log.d(TAG,"Image " + IMG_DIR + "/"+ filename + " not found!");
+            return null;
+        }
+        String pathname = f.getAbsolutePath();
+        Bitmap bmp = BitmapFactory.decodeFile(pathname);
+        Log.d(TAG, "Opened image " + IMG_DIR + "/" + filename);
+        return bmp;
     }
 
     @Override
