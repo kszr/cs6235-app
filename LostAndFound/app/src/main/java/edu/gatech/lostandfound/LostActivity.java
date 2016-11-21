@@ -77,10 +77,9 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
             return;
         }
 
-        new AsyncTask() {
-
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected Object doInBackground(Object[] params) {
+            protected Void doInBackground(Void... params) {
                 // TODO: Send data to server here:
                 //       userid,
                 //       place,
