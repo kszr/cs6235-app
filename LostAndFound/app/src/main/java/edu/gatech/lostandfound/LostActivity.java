@@ -17,7 +17,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -27,7 +26,7 @@ import java.util.Date;
 /**
  * Created by abhishekchatterjee on 10/23/16.
  */
-public class LostActivity extends CustomActionBarActivity implements OnConnectionFailedListener {
+public class LostActivity extends CustomActionBarActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LostActivity";
     private static final int PLACE_PICKER_REQUEST = 0;
 

@@ -19,7 +19,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
@@ -30,7 +33,7 @@ import java.io.IOException;
 /**
  * Created by abhishekchatterjee on 10/23/16.
  */
-public class FoundActivity extends CustomActionBarActivity {
+public class FoundActivity extends CustomActionBarActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "FoundActivity";
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int CAMERA_ACTIVITY = 0;
@@ -49,6 +52,14 @@ public class FoundActivity extends CustomActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_found);
+
+        new GoogleApiClient
+            .Builder(this)
+            .addApi(Places.GEO_DATA_API)
+            .addApi(Places.PLACE_DETECTION_API)
+            .enableAutoManage(this, this)
+            .build();
+
         setUpButtons();
     }
 
@@ -216,5 +227,10 @@ public class FoundActivity extends CustomActionBarActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }
