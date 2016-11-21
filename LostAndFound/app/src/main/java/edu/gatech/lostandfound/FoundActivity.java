@@ -8,7 +8,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,7 +42,8 @@ public class FoundActivity extends CustomActionBarActivity {
     private Bitmap photo = null;
     private Double lat = null;
     private Double lon = null;
-    private boolean leaveObject = false;
+    private boolean leaveObject = true;
+    private Place place = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +67,7 @@ public class FoundActivity extends CustomActionBarActivity {
         lost_and_found.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Lost and Found'.");
+                leaveObject = false;
                 Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
@@ -73,12 +80,36 @@ public class FoundActivity extends CustomActionBarActivity {
         keep_object.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Leave Object'.");
-
+                leaveObject = true;
                 Button submit_button = (Button) findViewById(R.id.submit_found_button);
                 assert submit_button != null;
                 submit_button.setVisibility(View.VISIBLE);
             }
 
+        });
+
+        Button submit_button = (Button) findViewById(R.id.submit_found_button);
+        assert submit_button != null;
+        submit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "Clicked 'Submit'.");
+
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        // TODO: Send data to server:
+                        //      userid,
+                        //      latlng,
+                        //      photo (send file to server, but store filepath in db?),
+                        //      leaveObject (true => chose to leave object where it is),
+                        //      place (null if leaveObject is true; else place where user turned object in).
+                        String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid","NONE");
+                        LatLng latlng = new LatLng(lat,lon);
+                        return null;
+                    }
+                }.execute();
+            }
         });
     }
 
@@ -126,7 +157,7 @@ public class FoundActivity extends CustomActionBarActivity {
         } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
 
         } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
-
+            // Nothing
         }
     }
 
