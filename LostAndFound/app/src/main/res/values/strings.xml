@@ -38,4 +38,6 @@
     <string name="image_activity">Object Info</string>
     <string name="report_lost">Report Lost Object</string>
     <string name="report_found">Report Found Object</string>
+    <string name="submitting">Submitting…</string>
+    <string name="submitted">Submitted</string>
 </resources>

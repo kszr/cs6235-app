@@ -24,7 +24,7 @@ public class ProfileActivity extends CustomActionBarActivity {
 
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(ProfileActivity.this);
         String name = mPrefs.getString("displayname", "<NAME>");
-        String email = mPrefs.getString("email", "<EMAIL@EMAIL.COM");
+        String email = mPrefs.getString("email", "<EMAIL@EMAIL.COM>");
 
         TextView nom = (TextView) findViewById(R.id.username);
         name = "<b>Name:</b> " + name;

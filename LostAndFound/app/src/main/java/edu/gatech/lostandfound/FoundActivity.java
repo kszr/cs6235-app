@@ -1,6 +1,7 @@
 package edu.gatech.lostandfound;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.Manifest;
@@ -42,6 +43,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private static final int SUBMIT = 3;
     private static final String MY_IMG_DIR = "myn"; // Directory in internal storage for images taken by me.
 
+    private Context mContext = this;
     private Bitmap photo = null;
     private Double lat = null;
     private Double lon = null;
@@ -107,6 +109,18 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                 Log.i(TAG, "Clicked 'Submit'.");
 
                 new AsyncTask<Void, Void, Void>() {
+                    private ProgressDialog dialog;
+
+                    @Override
+                    protected void onPreExecute() {
+                        if (dialog == null) {
+                            dialog = new ProgressDialog(mContext);
+                            dialog.setMessage(getString(R.string.submitting));
+                            dialog.setIndeterminate(true);
+                        }
+                        dialog.show();
+                    }
+
                     @Override
                     protected Void doInBackground(Void... params) {
                         // TODO: Send data to server:
@@ -118,6 +132,24 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid","NONE");
                         LatLng latlng = new LatLng(lat,lon);
                         return null;
+                    }
+
+                    protected void onPostExecute(Void result) {
+                        if (dialog.isShowing()) {
+                            dialog.setMessage(getString(R.string.submitted));
+                            try {
+                                wait(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            dialog.dismiss();
+                        }
+
+                        // Ideally would like to erase the back stack after going back to HomePageActivity,
+                        // but we overrode HPA's onBackPressed() method, which would preven the user
+                        // from navigating back to this activity.
+
+                        ((Activity) mContext).finish();
                     }
                 }.execute();
             }
