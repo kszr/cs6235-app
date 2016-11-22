@@ -208,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             for(String permission : PERMISSIONS) {
                 if(!(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED)) {
                     ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{permission},
-                            1
+                        this,
+                        new String[]{permission},
+                        1
                     );
                 }
             }

@@ -159,9 +159,9 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private void startCameraActivity() {
         if (!(ActivityCompat.checkSelfPermission(this, CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{CAMERA_PERMISSION},
-                    1
+                this,
+                new String[]{CAMERA_PERMISSION},
+                1
             );
             return;
         }
