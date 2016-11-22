@@ -145,9 +145,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                             dialog.dismiss();
                         }
 
-                        // Ideally would like to erase the back stack after going back to HomePageActivity,
-                        // but we overrode HPA's onBackPressed() method, which would preven the user
-                        // from navigating back to this activity.
+                        /**
+                         * Ideally would like to erase the back stack after going back to HomePageActivity,
+                         * but we overrode HPA's onBackPressed() method, which would preven the user
+                         * from navigating back to this activity.
+                         */
 
                         ((Activity) mContext).finish();
                     }
