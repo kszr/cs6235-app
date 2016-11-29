@@ -108,6 +108,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Submit'.");
 
+                // Send data to server.
                 new AsyncTask<Void, Void, Void>() {
                     private ProgressDialog dialog;
 
@@ -130,7 +131,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         //      leaveObject (true => chose to leave object where it is),
                         //      place (null if leaveObject is true; else place where user turned object in).
                         String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid","NONE");
-                        LatLng latlng = new LatLng(lat,lon);
+                        String latlng = lat + "," + lon;
+                        String lvobj = String.valueOf(leaveObject);
                         return null;
                     }
 

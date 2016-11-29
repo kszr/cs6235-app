@@ -85,8 +85,8 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                 //       place,
                 //       date.
                 String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
-                Place place = selectedPlace;
-                Date date = new Date();
+                String placename = selectedPlace.getName().toString();
+                String date = new Date().toString();
                 return null;
             }
         }.execute();
