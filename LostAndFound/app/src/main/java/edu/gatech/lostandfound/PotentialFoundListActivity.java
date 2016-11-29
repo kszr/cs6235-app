@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.lostandfound.adapter.ImageAdapter;
 import edu.gatech.lostandfound.database.PotentialFoundDataSource;
 import edu.gatech.lostandfound.database.PotentialFoundObject;
 
@@ -54,13 +55,12 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
     /**
      * DUMMY METHOD TO POPULATE DB.
      */
-//    private void POPULATEDUMMYLIST() {
+    private void POPULATEDUMMYLIST() {
 //        dataSource.createObject("pathtoimg.png", new Date(116,10,18),new LatLng(30.0,30.0));
-//    }
+        dataSource.createObject("tah.png", new Date(116,10,29),new LatLng(33.7831017,-84.396623));
+    }
 
     private void setUpList() {
-        // TODO: Find a way to display image thumbnails in the list rather than text.
-
         final List<PotentialFoundObject> objectList = dataSource.getAllObjects();
         List<Bitmap> images = new ArrayList<>();
 
@@ -70,12 +70,13 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
             images.add(photo);
         }
 
-        final ListView listView = (ListView) findViewById(R.id.potential_found_list);
+        GridView gridView = (GridView) findViewById(R.id.potential_found_list);
 
-        ArrayAdapter<Bitmap> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, images);
+        ImageAdapter imageAdapter = new ImageAdapter(this,images);
+//        ArrayAdapter<Bitmap> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, images);
 
-        assert listView != null;
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        assert gridView != null;
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> myAdapter, View myView, int myItemInt, long mylng) {
                 Log.d(TAG,"Clicked item no. " + myItemInt);
                 Intent intent = new Intent(PotentialFoundListActivity.this, ImageActivity.class);
@@ -86,7 +87,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
             }
         });
 
-        listView.setAdapter(arrayAdapter);
+        gridView.setAdapter(imageAdapter);
     }
 
     private Bitmap getPhoto(String filename) {

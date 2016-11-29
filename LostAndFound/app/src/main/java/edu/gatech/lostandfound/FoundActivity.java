@@ -245,7 +245,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
         File mydir = this.getDir(MY_IMG_DIR, Context.MODE_PRIVATE); //Creating an internal dir.
 
         // TODO: Come up with unique filenames.
-        String filename = "pathtoimg.png";
+        String filename = "tah.png";
         File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
         FileOutputStream out = null;
         try {
