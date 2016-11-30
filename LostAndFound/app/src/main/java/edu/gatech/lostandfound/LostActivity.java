@@ -1,6 +1,8 @@
 package edu.gatech.lostandfound;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
     private static final String TAG = "LostActivity";
     private static final int PLACE_PICKER_REQUEST = 0;
 
+    private Context mContext = this;
     private boolean onMap = false;
     private boolean visible = false;
     private Place selectedPlace = null;
@@ -78,6 +81,18 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
         }
 
         new AsyncTask<Void, Void, Void>() {
+            private ProgressDialog dialog;
+
+            @Override
+            protected void onPreExecute() {
+                if (dialog == null) {
+                    dialog = new ProgressDialog(mContext);
+                    dialog.setMessage(getString(R.string.submitting));
+                    dialog.setIndeterminate(true);
+                }
+                dialog.show();
+            }
+
             @Override
             protected Void doInBackground(Void... params) {
                 // TODO: Send data to server here:
@@ -88,6 +103,20 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                 String placename = selectedPlace.getName().toString();
                 String date = new Date().toString();
                 return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                if (dialog.isShowing()) {
+                    dialog.setMessage(getString(R.string.submitted));
+//                    try {
+//                        wait(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+                    dialog.dismiss();
+                }
+
+                ((Activity) mContext).finish();
             }
         }.execute();
     }
@@ -150,7 +179,8 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
         onMap = true;
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
-            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+            Intent intent = builder.build(this);
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
@@ -158,16 +188,18 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
 
     @Override
     public void onBackPressed() {
-        if(onMap)
-            this.finish();
-        else super.onBackPressed();
+        if(onMap) {
+            ((Activity) mContext).finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK)
             if(onMap)
-                this.finish();
+                onBackPressed();
 
         return super.onKeyDown(keyCode, event);
     }

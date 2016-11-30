@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,9 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
@@ -49,6 +53,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private Double lon = null;
     private boolean leaveObject = true;
     private Place place = null;
+    private boolean onMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +135,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         //      photo (send file to server, but store filepath in db?),
                         //      leaveObject (true => chose to leave object where it is),
                         //      place (null if leaveObject is true; else place where user turned object in).
-                        String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid","NONE");
+                        String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid", "NONE");
                         String latlng = lat + "," + lon;
                         String lvobj = String.valueOf(leaveObject);
                         return null;
@@ -139,11 +144,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                     protected void onPostExecute(Void result) {
                         if (dialog.isShowing()) {
                             dialog.setMessage(getString(R.string.submitted));
-                            try {
-                                wait(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+//                            try {
+//                                wait(1000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
                             dialog.dismiss();
                         }
 

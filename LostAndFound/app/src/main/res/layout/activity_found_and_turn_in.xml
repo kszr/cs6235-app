@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    android:name="com.google.android.gms.maps.MapFragment"
-    android:id="@+id/map"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/light_bone"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fati_confirm_text"
+        android:ellipsize="none"
+        android:paddingTop="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp"
+        android:visibility="gone"
+        android:scrollHorizontally="false"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_confirm"
+        android:id="@+id/button_confirm2"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_goback"
+        android:id="@+id/button_goback2"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

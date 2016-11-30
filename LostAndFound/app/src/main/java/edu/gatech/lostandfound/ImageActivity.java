@@ -54,7 +54,7 @@ public class ImageActivity extends CustomActionBarActivity {
                 // TODO: The image viewer closes immediately.
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)));
+                intent.setDataAndType(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)),"image/*");
                 startActivity(intent);
             }
         });
