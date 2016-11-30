@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -148,12 +149,12 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         String fname = filename;
 
                         Log.d(TAG, "reportTurnInLocation(): " + userId +
-                            ",(" + latlon +
-                            ")," + date +
-                            "," + fname +
-                            "," + leaveObject +
-                            ",(" + latlon2 +
-                            ")," + placeName);
+                                ",(" + latlon +
+                                ")," + date +
+                                "," + fname +
+                                "," + leaveObject +
+                                ",(" + latlon2 +
+                                ")," + placeName);
 
                         // TODO: Send image file to server somehow.
 
@@ -232,6 +233,14 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             assert submit_button != null;
             submit_button.setVisibility(View.VISIBLE);
 
+            Button leave_button = (Button) findViewById(R.id.leave_object_button);
+            assert leave_button != null;
+            leave_button.setClickable(false);
+
+            Button turn_in_button = (Button) findViewById(R.id.turn_in_object_button);
+            assert turn_in_button != null;
+            turn_in_button.setClickable(false);
+
             latlon2 = data.getStringExtra("latlon2");
             placeName = data.getStringExtra("placeName");
         }
@@ -267,7 +276,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             lon = location.getLongitude();
         }
         saveImage(photo);
-        Log.d(TAG,"latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
+        Log.d(TAG, "latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
     }
 
     private void saveImage(Bitmap bmp) {
@@ -297,5 +306,18 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            onBackPressed();
+
+        return super.onKeyDown(keyCode, event);
     }
 }
