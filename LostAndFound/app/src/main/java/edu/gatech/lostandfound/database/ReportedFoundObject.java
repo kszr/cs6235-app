@@ -7,14 +7,16 @@ import java.util.Date;
 /**
  * Created by abhishekchatterjee on 11/30/16.
  */
-public class ReportedObject {
+public class ReportedFoundObject {
     private long id;
+    private String foundObjectId;
     private Date date;
-    private LatLng latLng_found;
+    private LatLng latLngFound;
     private boolean turnedIn;
     private LatLng latLngTurnedIn;
     private String placeName;
     private String filename;
+    private boolean claimed;
 
     public long getId() {
         return id;
@@ -33,11 +35,11 @@ public class ReportedObject {
     }
 
     public LatLng getLatLngFound() {
-        return latLng_found;
+        return latLngFound;
     }
 
     public void setLatLngFound(LatLng latLng_found) {
-        this.latLng_found = latLng_found;
+        this.latLngFound = latLng_found;
     }
 
     public boolean isTurnedIn() {
@@ -70,5 +72,21 @@ public class ReportedObject {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getFoundObjectId() {
+        return foundObjectId;
+    }
+
+    public void setFoundObjectId(String foundObjectId) {
+        this.foundObjectId = foundObjectId;
+    }
+
+    public boolean isClaimed() {
+        return claimed;
+    }
+
+    public void setClaimed(boolean claimed) {
+        this.claimed = claimed;
     }
 }
