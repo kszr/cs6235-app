@@ -57,7 +57,23 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
      */
     private void POPULATEDUMMYLIST() {
 //        dataSource.createObject("pathtoimg.png", new Date(116,10,18),new LatLng(30.0,30.0));
-        dataSource.createObject("tah.png", new Date(116, 10, 29), new LatLng(33.7831017, -84.396623));
+        dataSource.createObject("f123",
+                "l456",
+                new Date(116, 10, 29),
+                new LatLng(33.7831017, -84.396623),
+                true,
+                new LatLng(30.0, -30.0),
+                "Clouds",
+                "tah.png");
+
+        dataSource.createObject("f124",
+                "l457",
+                new Date(116, 10, 18),
+                new LatLng(30.0, 30.0),
+                false,
+                null,
+                "",
+                "pathtoimg.png");
     }
 
     private void setUpList() {
@@ -82,7 +98,16 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
                 Intent intent = new Intent(PotentialFoundListActivity.this, ImageActivity.class);
                 intent.putExtra("filename", objectList.get(myItemInt).getFilename());
                 intent.putExtra("date", objectList.get(myItemInt).getDate().toString());
-                intent.putExtra("latlng", objectList.get(myItemInt).getLatLng().toString());
+                intent.putExtra("latlngfound", objectList.get(myItemInt).getLatLngFound().toString());
+                boolean turnedin = objectList.get(myItemInt).isTurnedIn();
+                intent.putExtra("turnedin",turnedin);
+                if(turnedin) {
+                    intent.putExtra("latlngturnedin",objectList.get(myItemInt).getLatLngFound().toString());
+                    intent.putExtra("placename",objectList.get(myItemInt).getPlaceName());
+                } else {
+                    intent.putExtra("latlngturnedin","");
+                    intent.putExtra("placename","");
+                }
                 startActivityForResult(intent, IMAGE_ACTIVITY);
             }
         });

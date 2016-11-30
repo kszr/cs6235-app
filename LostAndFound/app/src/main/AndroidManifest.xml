@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
+        <service android:name=".BackgroundService" />
+
         <activity
             android:name="edu.gatech.lostandfound.SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

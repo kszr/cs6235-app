@@ -21,9 +21,14 @@ public class PotentialFoundDataSource {
     private SQLiteDatabase database;
     private PotentialFoundSQLiteHelper dbHelper;
     private String[] allColumns = { PotentialFoundSQLiteHelper.COLUMN_ID,
-            PotentialFoundSQLiteHelper.COLUMN_FILENAME,
+            PotentialFoundSQLiteHelper.COLUMN_FOUND_OBJECT_ID,
+            PotentialFoundSQLiteHelper.COLUMN_LOST_OBJECT_ID,
             PotentialFoundSQLiteHelper.COLUMN_DATE,
-            PotentialFoundSQLiteHelper.COLUMN_LATLNG};
+            PotentialFoundSQLiteHelper.COLUMN_LATLNG_FOUND,
+            PotentialFoundSQLiteHelper.COLUMN_TURNED_IN,
+            PotentialFoundSQLiteHelper.COLUMN_LATLNG_TURNED_IN,
+            PotentialFoundSQLiteHelper.COLUMN_PLACE_NAME,
+            PotentialFoundSQLiteHelper.COLUMN_FILENAME};
 
     public PotentialFoundDataSource(Context context) {
         dbHelper = new PotentialFoundSQLiteHelper(context);
@@ -37,15 +42,35 @@ public class PotentialFoundDataSource {
         dbHelper.close();
     }
 
-    public PotentialFoundObject createObject(String filename,
-                                              Date date,
-                                              LatLng latLng) {
+    public PotentialFoundObject createObject(String foid,
+                                             String loid,
+                                             Date date,
+                                             LatLng latLngFound,
+                                             boolean turnedIn,
+                                             LatLng latLngTurnedIn,
+                                             String placeName,
+                                             String filename) {
         ContentValues values = new ContentValues();
+        values.put(PotentialFoundSQLiteHelper.COLUMN_FOUND_OBJECT_ID,foid);
+        values.put(PotentialFoundSQLiteHelper.COLUMN_LOST_OBJECT_ID,loid);
         values.put(PotentialFoundSQLiteHelper.COLUMN_FILENAME,filename);
         values.put(PotentialFoundSQLiteHelper.COLUMN_DATE,date.toString());
 
-        String llstring = latLng.latitude+","+latLng.longitude;
-        values.put(PotentialFoundSQLiteHelper.COLUMN_LATLNG,llstring);
+        String llstring1 = latLngFound.latitude+","+latLngFound.longitude;
+        values.put(PotentialFoundSQLiteHelper.COLUMN_LATLNG_FOUND,llstring1);
+
+        values.put(PotentialFoundSQLiteHelper.COLUMN_TURNED_IN,String.valueOf(turnedIn));
+
+        String llstring2 = "";
+        String pn = "";
+
+        if(turnedIn) {
+            llstring2 = latLngTurnedIn.latitude+","+latLngTurnedIn.longitude;
+            pn = placeName;
+        }
+
+        values.put(PotentialFoundSQLiteHelper.COLUMN_LATLNG_TURNED_IN,llstring2);
+        values.put(PotentialFoundSQLiteHelper.COLUMN_PLACE_NAME,pn);
 
         long insertId = database.insert(PotentialFoundSQLiteHelper.TABLE_POTENTIAL_FOUND, null,
                 values);
@@ -85,10 +110,22 @@ public class PotentialFoundDataSource {
     private PotentialFoundObject cursorToObject(Cursor cursor) {
         PotentialFoundObject object = new PotentialFoundObject();
         object.setId(cursor.getLong(0));
-        object.setFilename(cursor.getString(1));
-        object.setDate(new Date(cursor.getString(2)));
-        String[] latlng =  cursor.getString(3).split(",");
-        object.setLatLng(new LatLng(Double.parseDouble(latlng[0]),Double.parseDouble(latlng[1])));
+        object.setFoundObjectId(cursor.getString(1));
+        object.setLostObjectId(cursor.getString(2));
+        object.setDate(new Date(cursor.getString(3)));
+        String[] latlng1 = cursor.getString(4).split(",");
+        object.setLatLngFound(new LatLng(Double.parseDouble(latlng1[0]), Double.parseDouble(latlng1[1])));
+        boolean turnedin = Boolean.parseBoolean(cursor.getString(5));
+        object.setTurnedIn(turnedin);
+        if(turnedin) {
+            String[] latlng2 = cursor.getString(6).split(",");
+            object.setLatLngTurnedIn(new LatLng(Double.parseDouble(latlng2[0]),Double.parseDouble(latlng2[1])));
+            object.setPlaceName(cursor.getString(7));
+        } else {
+            object.setLatLngTurnedIn(null);
+            object.setPlaceName("");
+        }
+        object.setFilename(cursor.getString(8));
         return object;
     }
 

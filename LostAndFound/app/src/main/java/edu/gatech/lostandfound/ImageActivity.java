@@ -37,7 +37,10 @@ public class ImageActivity extends CustomActionBarActivity {
         Bundle extras = intent.getExtras();
         final String filename = extras.getString("filename");
         String date = extras.getString("date");
-        String latlng = extras.getString("latlng");
+        String latlngfound = extras.getString("latlngfound");
+        boolean turnedin = extras.getBoolean("turnedin");
+        String latlngturnedin = extras.getString("latlngturnedin");
+        String placename = extras.getString("placename");
 
         ImageView img = (ImageView) findViewById(R.id.img_preview);
         Bitmap photo = getPhoto(filename);
@@ -54,7 +57,7 @@ public class ImageActivity extends CustomActionBarActivity {
                 // TODO: The image viewer closes immediately.
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)),"image/*");
+                intent.setDataAndType(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)), "image/*");
                 startActivity(intent);
             }
         });
@@ -63,9 +66,25 @@ public class ImageActivity extends CustomActionBarActivity {
         assert dt != null;
         dt.setText("Date: " + date);
 
-        TextView ll = (TextView) findViewById(R.id.latlng);
-        assert ll != null;
-        ll.setText("Location: " + latlng);
+        TextView llf = (TextView) findViewById(R.id.latlngfound);
+        assert llf != null;
+        llf.setText("Location found: " + latlngfound);
+
+        TextView ti = (TextView) findViewById(R.id.turnedin);
+        assert ti != null;
+        ti.setText(turnedin ? "Item turned in" : "Item left at location");
+
+        if(turnedin) {
+            TextView llti = (TextView) findViewById(R.id.latlngturnedin);
+            assert llti != null;
+            llti.setVisibility(View.VISIBLE);
+            llti.setText("Location turned in: " + latlngturnedin);
+
+            TextView pn = (TextView) findViewById(R.id.placename);
+            assert pn != null;
+            llti.setVisibility(View.VISIBLE);
+            llti.setText("Name of place: " + placename);
+        }
 
     }
 

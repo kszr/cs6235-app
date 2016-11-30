@@ -23,6 +23,35 @@ import android.util.Log;
  */
 
 public class BackgroundService extends IntentService {
+    private static final String TAG = "BackgroundService";
+
+    private Context mContext = null;
+
+
+    public class BackgroundTask extends AsyncTask<String, String, Void> {
+        Context mContext = null;
+
+        public BackgroundTask(Context context) {
+            mContext = context;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        protected Void doInBackground(final String... args) {
+
+            return null;
+        }
+
+        protected void onPostExecute(final Void unused) {
+
+        }
+    }
+
+    public BackgroundService() {
+        super(TAG);
+    }
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -35,6 +64,15 @@ public class BackgroundService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        mContext = getBaseContext();
+//        new BackgroundTask(mContext).execute();
+    }
 
+    public void callService(int work) {
+
+    }
+
+    public String sendDataToServer(String data) {
+        return null;
     }
 }
