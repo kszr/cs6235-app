@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -110,10 +111,40 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 editor.putString("userid",result.getSignInAccount().getId());
                 editor.putString("email",result.getSignInAccount().getEmail());
                 editor.apply();
+
+                registerUser(result.getSignInAccount());
                 hideProgressDialog();
                 handleSignInResult(result);
             }
         }
+    }
+
+    /**
+     * Registering a new user with the server. This involves sending user information
+     * to the server whenever the user explicitly signs in (as opposed to using cached sign-in).
+     * The server then decides whether the user is a new user or an existing user. The justification
+     * for doing it this way is twofold:
+     *      1. A user's registration status should not be tied to the app, because an existing user
+     *      of the app can sign into the app from a different device or after having erased the app's
+     *      local storage.
+     *      2. Inasmuch as a cached sign in is used in most cases and a user has to explicitly sign out
+     *      and then sign in in order for this method to be called, the overhead associated with
+     *      a large user base sending user information to the server on sign-in should not be too high.
+     * @param account
+     */
+    private void registerUser(final GoogleSignInAccount account) {
+        Log.i(TAG,"registerUser: Sending user information to the server.");
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                String id = account.getId();
+                String name = account.getDisplayName();
+                String email = account.getEmail();
+                // TODO: Send the above information to the server.
+                return null;
+            }
+        }.execute();
     }
 
     private void cachedSignIn() {
