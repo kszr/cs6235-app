@@ -97,11 +97,17 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
             protected Void doInBackground(Void... params) {
                 // TODO: Send data to server here:
                 //       userid,
-                //       place,
+                //       latlon,
                 //       date.
                 String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
                 String placename = selectedPlace.getName().toString();
+                String latlon = selectedPlace.getLatLng().latitude+","+selectedPlace.getLatLng().longitude;
                 String date = new Date().toString();
+
+                Log.d(TAG,"reportLostLocation(): " + userId +
+                        ",(" + latlon +
+                        ")," + date);
+
                 return null;
             }
 

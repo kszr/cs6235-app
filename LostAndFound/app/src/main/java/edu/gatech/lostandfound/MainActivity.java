@@ -141,6 +141,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 String id = account.getId();
                 String name = account.getDisplayName();
                 String email = account.getEmail();
+
+                Log.d(TAG,"registerUser(): " + id +
+                        "," + name +
+                        "," + email);
+
                 // TODO: Send the above information to the server.
                 return null;
             }

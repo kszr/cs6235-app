@@ -57,7 +57,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
      */
     private void POPULATEDUMMYLIST() {
 //        dataSource.createObject("pathtoimg.png", new Date(116,10,18),new LatLng(30.0,30.0));
-        dataSource.createObject("tah.png", new Date(116,10,29),new LatLng(33.7831017,-84.396623));
+        dataSource.createObject("tah.png", new Date(116, 10, 29), new LatLng(33.7831017, -84.396623));
     }
 
     private void setUpList() {
@@ -128,4 +128,10 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
         super.onPause();
     }
 
+    @Override
+    public void finish() {
+        dataSource.close();
+
+        super.finish();
+    }
 }

@@ -67,59 +67,18 @@ public class FoundAndTurnInActivity extends CustomActionBarActivity implements G
         buttonConf.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Confirm'.");
-                buttonGoback.setClickable(false);
-                buttonConf.setClickable(false);
-                reportTurnInLocation();
-            }
-        });
-    }
 
-    private void reportTurnInLocation() {
-        Log.d(TAG,"reportTurnInLocation: selectedPlace == null? " + (selectedPlace==null));
-        if(selectedPlace == null) {
-            Log.i(TAG,"Nothing to send to server.");
-            return;
-        }
+                String latlon2 = selectedPlace.getLatLng().latitude+","+selectedPlace.getLatLng().longitude;
 
-        new AsyncTask<Void, Void, Void>() {
-            private ProgressDialog dialog;
+                Intent intent = new Intent();
+                intent.putExtra("latlon2",latlon2);
+                intent.putExtra("placeName",selectedPlace.getName());
 
-            @Override
-            protected void onPreExecute() {
-                if (dialog == null) {
-                    dialog = new ProgressDialog(mContext);
-                    dialog.setMessage(getString(R.string.submitting));
-                    dialog.setIndeterminate(true);
-                }
-                dialog.show();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                // TODO: Send data to server here:
-                //       userid,
-                //       place,
-                //       date.
-                String userId = PreferenceManager.getDefaultSharedPreferences(FoundAndTurnInActivity.this).getString("userid","NONE");
-                String placename = selectedPlace.getName().toString();
-                String date = new Date().toString();
-                return null;
-            }
-
-            protected void onPostExecute(Void result) {
-                if (dialog.isShowing()) {
-                    dialog.setMessage(getString(R.string.submitted));
-//                    try {
-//                        wait(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-                    dialog.dismiss();
-                }
+                setResult(Activity.RESULT_OK,intent);
 
                 ((Activity) mContext).finish();
             }
-        }.execute();
+        });
     }
 
     @Override

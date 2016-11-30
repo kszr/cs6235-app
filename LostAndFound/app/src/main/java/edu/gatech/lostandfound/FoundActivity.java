@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.
@@ -51,8 +52,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private Bitmap photo = null;
     private Double lat = null;
     private Double lon = null;
+    private String filename = "";
     private boolean leaveObject = true;
+    private String latlon2 = "";
     private Place place = null;
+    private String placeName = "";
     private boolean onMap = false;
 
     @Override
@@ -89,6 +93,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                 Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
+                intent.putExtra("filename",filename);
+
                 startActivityForResult(intent, FOUND_AND_TURN_IN);
             }
         });
@@ -136,8 +142,21 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         //      leaveObject (true => chose to leave object where it is),
                         //      place (null if leaveObject is true; else place where user turned object in).
                         String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid", "NONE");
-                        String latlng = lat + "," + lon;
+                        String latlon = lat + "," + lon;
                         String lvobj = String.valueOf(leaveObject);
+                        String date = new Date().toString();
+                        String fname = filename;
+
+                        Log.d(TAG, "reportTurnInLocation(): " + userId +
+                            ",(" + latlon +
+                            ")," + date +
+                            "," + fname +
+                            "," + leaveObject +
+                            ",(" + latlon2 +
+                            ")," + placeName);
+
+                        // TODO: Send image file to server somehow.
+
                         return null;
                     }
 
@@ -207,9 +226,14 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             assert keep_object != null;
             keep_object.setVisibility(View.VISIBLE);
         } else if(requestCode == FOUND_AND_TURN_IN && resultCode == Activity.RESULT_OK) {
+            leaveObject = false;
 
-        } else if(requestCode == FOUND_AND_LEAVE && resultCode == Activity.RESULT_OK) {
-            // Nothing
+            Button submit_button = (Button) findViewById(R.id.submit_found_button);
+            assert submit_button != null;
+            submit_button.setVisibility(View.VISIBLE);
+
+            latlon2 = data.getStringExtra("latlon2");
+            placeName = data.getStringExtra("placeName");
         }
     }
 
@@ -250,7 +274,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
         File mydir = this.getDir(MY_IMG_DIR, Context.MODE_PRIVATE); //Creating an internal dir.
 
         // TODO: Come up with unique filenames.
-        String filename = "tah.png";
+        filename = "tah.png";
         File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
         FileOutputStream out = null;
         try {
