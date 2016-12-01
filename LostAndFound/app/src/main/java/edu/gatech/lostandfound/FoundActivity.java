@@ -166,7 +166,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
                 date = new Date().toString();
 
-                sendDataToServer();
+                sendPictureToServer();
+
             }
         });
     }
@@ -174,15 +175,15 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private void sendDataToServer() {
         JSONObject jsonObject = new JSONObject();
         try {
-//            jsonObject.put("userid", PreferenceManager
-//                    .getDefaultSharedPreferences(FoundActivity.this)
-//                    .getString("userid", "NONE"));
-            jsonObject.put("userid","abhishek");
-            jsonObject.put("latlon", lat+":"+lon);
+            jsonObject.put("userid", PreferenceManager
+                    .getDefaultSharedPreferences(FoundActivity.this)
+                    .getString("userid", "NONE"));
+            jsonObject.put("latlon",lat+":"+lon);
             jsonObject.put("date", new Date().toString());
             jsonObject.put("description", "");
             jsonObject.put("leaveObject",leaveObject ? "1" : "0");
             jsonObject.put("placename",placeName);
+            jsonObject.put("filename",filename);
             jsonObject.put("latlon2",latlon2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -205,20 +206,21 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                     public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
                         try {
                             Log.i(TAG, "Report found object success");
-//                            foid = json.getString("objid");
 //                            String result = json.getString("Result");
-                            makeToast("Reported found object", Toast.LENGTH_LONG);
-//                            Log.i(TAG, json.toString());
-//                            dataSource.createObject(foid,
-//                                    new Date(date),
-//                                    new LatLng(lat, lon),
-//                                    leaveObject,
-//                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
-//                                            Double.valueOf(latlon2.split(":")[1])) : new LatLng(0, 0),
-//                                    "",
-//                                    filename,
-//                                    false);
+                            foid = json.getString("objid");
 
+                            makeToast("Reported found object", Toast.LENGTH_LONG);
+                            Log.i(TAG, json.toString());
+                            dataSource.createObject(foid,
+                                    new Date(date),
+                                    new LatLng(lat, lon),
+                                    leaveObject,
+                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
+                                            Double.valueOf(latlon2.split(":")[1])) : new LatLng(0, 0),
+                                    "",
+                                    filename,
+                                    false);
+                            // TODO: Save image as foid.png.
                             // Send picture to server.
                             sendPictureToServer();
                         } catch (Exception e) {
@@ -239,6 +241,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     }
 
     private void sendPictureToServer() {
+        // TODO: Fix file error.
+
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
@@ -274,6 +278,9 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                             Log.i(TAG, "Upload found object image success");
                             makeToast("Uploaded image to server", Toast.LENGTH_LONG);
                             Log.i(TAG, json.toString());
+                            filename = json.getString("Filename");
+
+                            sendDataToServer();
                         } catch (Exception e) {
                             makeToast("Error uploading image", Toast.LENGTH_LONG);
                             Log.d(TAG, json.toString());

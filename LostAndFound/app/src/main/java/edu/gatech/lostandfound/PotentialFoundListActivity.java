@@ -109,11 +109,13 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
         assert gridView != null;
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> myAdapter, View myView, int myItemInt, long mylng) {
-                Log.d(TAG,"Clicked item no. " + myItemInt);
+                Log.d(TAG, "Clicked item no. " + myItemInt);
                 Intent intent = new Intent(PotentialFoundListActivity.this, ImageActivity.class);
                 intent.putExtra("filename", objectList.get(myItemInt).getFilename());
                 intent.putExtra("date", objectList.get(myItemInt).getDate().toString());
                 intent.putExtra("latlngfound", objectList.get(myItemInt).getLatLngFound().toString());
+                intent.putExtra("foid",objectList.get(myItemInt).getFoundObjectId());
+                intent.putExtra("loid",objectList.get(myItemInt).getLostObjectId());
                 boolean turnedin = objectList.get(myItemInt).isTurnedIn();
                 intent.putExtra("turnedin",turnedin);
                 if(turnedin) {

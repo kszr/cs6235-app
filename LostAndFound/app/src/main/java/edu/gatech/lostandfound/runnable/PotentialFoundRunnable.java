@@ -14,6 +14,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,9 +72,6 @@ public class PotentialFoundRunnable implements Runnable {
         }
 
         getPotentialFoundList();
-        updateImages();
-
-        dataSource.close();
 
         handler.postDelayed(this, period);
     }
@@ -103,13 +103,11 @@ public class PotentialFoundRunnable implements Runnable {
                 new JsonHttpResponseHandler() {
                     @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
                         try {
-                            Log.i(TAG, "Report lost object success");
-                            JSONArray names = json.names();
-                            JSONArray jsonArray = json.toJSONArray(names);
-                            JSONArray objArray = jsonArray.getJSONArray(0);
-                            Log.i(TAG, objArray.toString());
+                            Log.i(TAG, "Get potential lost objects list success");
+                            String obj = jsonObject.getString("list");
+                            JSONArray objArray = new JSONArray(obj);
                             updateDBEntries(objArray);
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
@@ -122,6 +120,7 @@ public class PotentialFoundRunnable implements Runnable {
                         Log.e(TAG, "Report lost object failed: status: " + statusCode);
                         Log.e(TAG, "Response string: " + responseString);
                         Log.e(TAG, t.toString());
+//                        dataSource.close();
                     }
                 });
     }
@@ -133,54 +132,35 @@ public class PotentialFoundRunnable implements Runnable {
             dataSource.deleteObject(obj);
         }
 
+        List<String> filenames = new ArrayList<>();
         for(int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject json = jsonArray.getJSONObject(i);
 
-                Date date = new Date(json.getString("date"));
-                LatLng latlon = new LatLng(json.getDouble("lat"),json.getDouble("lon"));
-                String filename = json.getString("filename");
-                String placename = json.getString("placename");
-                boolean leaveObject = json.getBoolean("leaveObject");
-                // LatLng latlon2 = new LatLng(json.getDouble("lat2"),json.getDouble("lon2"));
+                String foid = json.getString("f_obj_id");
+                String loid = json.getString("l_obj_id");
+                DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
+                DateTime dt = formatter.parseDateTime(json.getString("f_date"));
+                Date date = dt.toDate();
+                LatLng latlon = new LatLng(json.getDouble("f_lat"),json.getDouble("f_lon"));
+                String filename = json.getString("f_filename");
+                boolean leaveObject = json.getString("f_leaveObject").equals("1");
+                String placename = json.getString("f_placename");
+                LatLng latlon2 = new LatLng(json.getDouble("f_lat2"),json.getDouble("f_lon2"));
+                filenames.add(filename);
 
+                dataSource.createObject(foid,loid,date,latlon,!leaveObject,latlon2,placename,filename);
                 // TODO: Figure out if I need to change db format.
                 // TODO: Also, insert a new object into db.
+
+//                dataSource.close();
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-    }
 
-    private void updateImages() {
-        List<Bitmap> imgList = getImages();
-
-        // TODO: Save images in internal storage.
-
-        File mydir = mContext.getDir(IMG_DIR_OTH, Context.MODE_PRIVATE); //Creating an internal dir.
-
-        // TODO: Come up with unique filenames.
-        for(Bitmap img : imgList) {
-            String filename = "tah.png"; // TODO: filename from server
-            File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(fileWithinMyDir);
-                img.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                    Log.d(TAG, "Saved image: " + IMG_DIR_OTH + "/" + filename);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        getImagesFromServer(filenames);
     }
 
     private List<Bitmap> getImages() {
@@ -189,14 +169,18 @@ public class PotentialFoundRunnable implements Runnable {
         return new ArrayList<>();
     }
 
-    private void getImageFromServer() {
+    private void getImagesFromServer(List<String> filenames) {
+        for(String filename : filenames)
+            getImageFromServer(filename);
+    }
+
+    private void getImageFromServer(final String filename) {
         JSONObject jsonObject = new JSONObject();
         try {
-//            jsonObject.put("userid", PreferenceManager
-//                    .getDefaultSharedPreferences(FoundActivity.this)
-//                    .getString("userid", "NONE"));
-            jsonObject.put("userid","amit");    // TODO: Change
-            jsonObject.put("filename","/home/amit/images/2.jpeg"); // TODO: Change
+            jsonObject.put("userid", PreferenceManager
+                    .getDefaultSharedPreferences(mContext)
+                    .getString("userid", "NONE"));
+            jsonObject.put("filename",filename); // TODO: Change
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -224,8 +208,7 @@ public class PotentialFoundRunnable implements Runnable {
                     e.printStackTrace();
                 }
                 Log.i(TAG,file.getAbsolutePath());
-                saveImage(mContext,bmp,"oth","tah.png");
-
+//                saveImage(mContext,bmp,IMG_DIR_OTH,filename);
             }
         });
     }

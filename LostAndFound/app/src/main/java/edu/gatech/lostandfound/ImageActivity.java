@@ -6,16 +6,28 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import edu.gatech.lostandfound.util.HttpUtil;
 
 /**
  * Created by abhishekchatterjee on 11/18/16.
@@ -27,6 +39,11 @@ public class ImageActivity extends CustomActionBarActivity {
     private String filename;
     private Date date;
     private LatLng latLng;
+    private String foid;
+    private String userid;
+    private String loid;
+    private Context mContext = this;
+    private AsyncHttpClient client = new AsyncHttpClient();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +52,11 @@ public class ImageActivity extends CustomActionBarActivity {
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        userid = PreferenceManager
+                .getDefaultSharedPreferences(ImageActivity.this)
+                .getString("userid", "NONE");
+        foid = extras.getString("foid");
+        loid = extras.getString("loid");
         final String filename = extras.getString("filename");
         String date = extras.getString("date");
         String latlngfound = extras.getString("latlngfound");
@@ -61,6 +83,53 @@ public class ImageActivity extends CustomActionBarActivity {
 //                startActivity(intent);
 //            }
 //        });
+
+        Button claimButton = (Button) findViewById(R.id.button_claim);
+        assert claimButton != null;
+        claimButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("userid", userid);
+                    jsonObject.put("l_objid", loid);
+                    jsonObject.put("f_objid", foid);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                StringEntity entity = null;
+                try {
+                    entity = new StringEntity(jsonObject.toString());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                client.post(mContext,
+                        HttpUtil.CLAIM_OBJECT_ENDPOINT,
+                        entity,
+                        "application/json",
+                        new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                                try {
+                                    Log.i(TAG, "Claimed object");
+                                } catch (Exception e) {
+                                    Log.d(TAG, json.toString());
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                                Log.e(TAG, "Claim object failed: status: " + statusCode);
+                                Log.e(TAG, "Response string: " + responseString);
+                                Log.e(TAG, t.toString());
+                                // TODO: Sign out if this fails.
+                            }
+                        });
+            }
+        });
 
         TextView dt = (TextView) findViewById(R.id.date);
         assert dt != null;

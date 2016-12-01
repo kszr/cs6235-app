@@ -9,7 +9,7 @@ public class HttpUtil {
     public static final String REPORT_LOST_OBJECT_ENDPOINT = BASE_URL + "/report_lost_object";
     public static final String REPORT_FOUND_OBJECT_ENDPOINT = BASE_URL + "/report_found_object";
     public static final String GET_POTENTIAL_FOUND_OBJECTS_ENDPOINT = BASE_URL + "/find_matching_objects";
-    public static final String CLAIM_OBJECT_ENDPOINT = "";
+    public static final String CLAIM_OBJECT_ENDPOINT = BASE_URL +  "/claim_object";
     public static final String SEND_IMAGE_ENDPOINT = BASE_URL + "/image_upload";
     public static final String GET_IMAGE_ENDPOINT = BASE_URL + "/get_image";
 
