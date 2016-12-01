@@ -49,14 +49,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
 
 //        POPULATEDUMMYLIST();
 
-        getImagesFromServer();
-
         setUpList();
-    }
-
-    // TODO: Get images from server...
-    private void getImagesFromServer() {
-
     }
 
     /**

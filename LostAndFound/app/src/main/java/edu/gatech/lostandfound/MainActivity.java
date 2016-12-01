@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -39,6 +40,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
+
+    private Handler handler = new Handler();
+    private final int handler_period = 60000;   // 60,000 seconds.
+    private static String IMG_DIR_OTH = "oth";
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            // TODO: Write code to poll server for potential found objs and images.
+            Log.d("Handlers", "Called on main thread");
+            handler.postDelayed(runnable, 2000);
+        }
+    };
 
     private static String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
