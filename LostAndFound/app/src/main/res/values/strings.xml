@@ -40,4 +40,5 @@
     <string name="report_found">Report Found Object</string>
     <string name="submitting">Submitting…</string>
     <string name="submitted">Submitted</string>
+    <string name="no_objects_to_show">No objects to show</string>
 </resources>

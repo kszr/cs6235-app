@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -30,6 +31,18 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import edu.gatech.lostandfound.runnable.PotentialFoundRunnable;
+import edu.gatech.lostandfound.util.HttpUtil;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     
@@ -38,20 +51,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final int HOME_PAGE_CODE = 1;
 
     private GoogleApiClient mGoogleApiClient;
-    private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
     private Handler handler = new Handler();
     private final int handler_period = 60000;   // 60,000 seconds.
-    private static String IMG_DIR_OTH = "oth";
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            // TODO: Write code to poll server for potential found objs and images.
-            Log.d("Handlers", "Called on main thread");
-            handler.postDelayed(runnable, 2000);
-        }
-    };
+    private PotentialFoundRunnable potentialFoundRunnable = new PotentialFoundRunnable(handler,handler_period,this);
+    private AsyncHttpClient client = new AsyncHttpClient();
 
     private static String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -90,7 +95,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        startBackgroundService();
+        // Start the initial runnable task by posting through the handler
+
+        handler.post(potentialFoundRunnable);
     }
 
     @Override
@@ -133,10 +140,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private void startBackgroundService() {
-
-    }
-
     /**
      * Registering a new user with the server. This involves sending user information
      * to the server whenever the user explicitly signs in (as opposed to using cached sign-in).
@@ -153,21 +156,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void registerUser(final GoogleSignInAccount account) {
         Log.i(TAG,"registerUser: Sending user information to the server.");
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                String id = account.getId();
-                String name = account.getDisplayName();
-                String email = account.getEmail();
+        String id = account.getId();
 
-                Log.d(TAG,"registerUser(): " + id +
-                        "," + name +
-                        "," + email);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid",id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-                // TODO: Send the above information to the server.
-                return null;
-            }
-        }.execute();
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonObject.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        client.post(this,
+                HttpUtil.REGISTER_USER_ENDPOINT,
+                entity,
+                "application/json",
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                        try {
+                            Log.i(TAG, "Registered user");
+                        } catch (Exception e) {
+                            Log.d(TAG, json.toString());
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                        Log.e(TAG, "Report lost object failed: status: " + statusCode);
+                        Log.e(TAG, "Response string: " + responseString);
+                        Log.e(TAG, t.toString());
+                        // TODO: Sign out if this fails.
+                    }
+                });
     }
 
     private void cachedSignIn() {

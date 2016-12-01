@@ -119,6 +119,7 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
             jsonObject.put("userid", PreferenceManager
                     .getDefaultSharedPreferences(LostActivity.this)
                     .getString("userid", "NONE"));
+//            jsonObject.put("userid","abhishek"); // TODO: Replace constant.
             jsonObject.put("latlon", latlon);
             jsonObject.put("date", date);
             jsonObject.put("description", "");
@@ -144,8 +145,9 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                         try {
                             Log.i(TAG, "Report lost object success");
                             loid = json.getString("objid");
-                            String result = json.getString("Result");
+//                            String result = json.getString("Result");
                             makeToast("Reported lost object", Toast.LENGTH_LONG);
+                            Log.i(TAG, json.toString());
                             dataSource.createObject(loid,
                                     new Date(date),
                                     selectedPlace.getLatLng(),

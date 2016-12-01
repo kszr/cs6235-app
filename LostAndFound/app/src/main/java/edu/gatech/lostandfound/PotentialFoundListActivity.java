@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -83,10 +84,23 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
         for(PotentialFoundObject object : objectList) {
             String filename = object.getFilename();
             Bitmap photo = getPhoto(filename);
-            images.add(photo);
+            if(photo != null)
+                images.add(photo);
         }
 
+        TextView tv = (TextView) findViewById(R.id.no_objects_to_show);
         GridView gridView = (GridView) findViewById(R.id.potential_found_list);
+        if(images.size() == 0) {
+            assert tv != null;
+            tv.setVisibility(View.VISIBLE);
+            assert gridView != null;
+            gridView.setVisibility(View.GONE);
+        } else {
+            assert tv != null;
+            tv.setVisibility(View.GONE);
+            assert gridView != null;
+            gridView.setVisibility(View.VISIBLE);
+        }
 
         ImageAdapter imageAdapter = new ImageAdapter(this,images);
 //        ArrayAdapter<Bitmap> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, images);

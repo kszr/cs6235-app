@@ -15,4 +15,15 @@
         android:gravity="center"
         />
 
+    <TextView
+        android:id="@+id/no_objects_to_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textSize="20sp"
+        android:text="@string/no_objects_to_show"
+        android:visibility="gone"
+        />
+
 </LinearLayout>

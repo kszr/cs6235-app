@@ -153,9 +153,10 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private void sendDataToServer() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userid", PreferenceManager
-                    .getDefaultSharedPreferences(FoundActivity.this)
-                    .getString("userid", "NONE"));
+//            jsonObject.put("userid", PreferenceManager
+//                    .getDefaultSharedPreferences(FoundActivity.this)
+//                    .getString("userid", "NONE"));
+            jsonObject.put("userid","abhishek");
             jsonObject.put("latlon", lat+":"+lon);
             jsonObject.put("date", new Date().toString());
             jsonObject.put("description", "");
@@ -184,8 +185,9 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         try {
                             Log.i(TAG, "Report found object success");
                             foid = json.getString("objid");
-                            String result = json.getString("Result");
+//                            String result = json.getString("Result");
                             makeToast("Reported found object", Toast.LENGTH_LONG);
+                            Log.i(TAG, json.toString());
                             dataSource.createObject(foid,
                                     new Date(date),
                                     new LatLng(lat,lon),
