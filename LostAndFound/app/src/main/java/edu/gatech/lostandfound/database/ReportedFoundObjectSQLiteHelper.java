@@ -21,7 +21,7 @@ public class ReportedFoundObjectSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CLAIMED = "claimed";
 
     private static final String DATABASE_NAME = "reportedfoundobjects.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 1; // Needs to be updated whenever the schema is changed.
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_REPORTED_FOUND_OBJECTS + "( " + COLUMN_ID

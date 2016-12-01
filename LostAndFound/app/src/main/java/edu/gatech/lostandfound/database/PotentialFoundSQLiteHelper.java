@@ -21,7 +21,7 @@ public class PotentialFoundSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_FILENAME = "filename";
 
     private static final String DATABASE_NAME = "potentialfound.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 2;  // Needs to be updated whenever the schema is changed.
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_POTENTIAL_FOUND + "( " + COLUMN_ID

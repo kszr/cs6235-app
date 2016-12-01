@@ -21,7 +21,8 @@ public class ReportedLostObjectDataSource {
     private String[] allColumns = { ReportedLostObjectSQLiteHelper.COLUMN_ID,
             ReportedLostObjectSQLiteHelper.COLUMN_LOST_OBJECT_ID,
             ReportedLostObjectSQLiteHelper.COLUMN_DATE,
-            ReportedLostObjectSQLiteHelper.COLUMN_LATLNG_LOST};
+            ReportedLostObjectSQLiteHelper.COLUMN_LATLNG_LOST,
+            ReportedLostObjectSQLiteHelper.COLUMN_FOUND};
 
     public ReportedLostObjectDataSource(Context context) {
         dbHelper = new ReportedLostObjectSQLiteHelper(context);
@@ -37,13 +38,16 @@ public class ReportedLostObjectDataSource {
 
     public ReportedLostObject createObject(String loid,
                                            Date date,
-                                           LatLng latLngLost) {
+                                           LatLng latLngLost,
+                                           boolean found) {
         ContentValues values = new ContentValues();
         values.put(ReportedLostObjectSQLiteHelper.COLUMN_LOST_OBJECT_ID,loid);
         values.put(ReportedLostObjectSQLiteHelper.COLUMN_DATE,date.toString());
 
         String llstring1 = latLngLost.latitude+","+latLngLost.longitude;
         values.put(ReportedLostObjectSQLiteHelper.COLUMN_LATLNG_LOST,llstring1);
+
+        values.put(ReportedLostObjectSQLiteHelper.COLUMN_FOUND,String.valueOf(found));
 
         long insertId = database.insert(ReportedLostObjectSQLiteHelper.TABLE_REPORTED_LOST_OBJECTS, null,
                 values);
@@ -58,7 +62,6 @@ public class ReportedLostObjectDataSource {
 
     public void deleteObject(ReportedLostObject object) {
         long id = object.getId();
-//        System.out.println("Object deleted with id: " + id);
         database.delete(ReportedLostObjectSQLiteHelper.TABLE_REPORTED_LOST_OBJECTS, ReportedLostObjectSQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
@@ -87,6 +90,7 @@ public class ReportedLostObjectDataSource {
         object.setDate(new Date(cursor.getString(2)));
         String[] latlng1 = cursor.getString(3).split(",");
         object.setLatLngLost(new LatLng(Double.parseDouble(latlng1[0]), Double.parseDouble(latlng1[1])));
+        object.setFound(Boolean.parseBoolean(cursor.getString(4)));
         return object;
     }
 }

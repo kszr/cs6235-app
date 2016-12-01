@@ -30,12 +30,24 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import edu.gatech.lostandfound.database.ReportedFoundObjectDataSource;
+import edu.gatech.lostandfound.util.HttpUtil;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.
@@ -51,19 +63,30 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
     private Context mContext = this;
     private Bitmap photo = null;
+    private String foid = "";
+    private String date = "";
     private Double lat = null;
     private Double lon = null;
     private String filename = "";
     private boolean leaveObject = true;
-    private String latlon2 = "";
+    private String latlon2 = "0:0";
     private Place place = null;
     private String placeName = "";
     private boolean onMap = false;
+
+    private AsyncHttpClient client = new AsyncHttpClient();
+    private ReportedFoundObjectDataSource dataSource = new ReportedFoundObjectDataSource(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_found);
+
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         new GoogleApiClient
             .Builder(this)
@@ -120,69 +143,76 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Submit'.");
 
-                // Send data to server.
-                new AsyncTask<Void, Void, Void>() {
-                    private ProgressDialog dialog;
+                date = new Date().toString();
 
-                    @Override
-                    protected void onPreExecute() {
-                        if (dialog == null) {
-                            dialog = new ProgressDialog(mContext);
-                            dialog.setMessage(getString(R.string.submitting));
-                            dialog.setIndeterminate(true);
-                        }
-                        dialog.show();
-                    }
-
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        // TODO: Send data to server:
-                        //      userid,
-                        //      latlng,
-                        //      photo (send file to server, but store filepath in db?),
-                        //      leaveObject (true => chose to leave object where it is),
-                        //      place (null if leaveObject is true; else place where user turned object in).
-                        String userId = PreferenceManager.getDefaultSharedPreferences(FoundActivity.this).getString("userid", "NONE");
-                        String latlon = lat + "," + lon;
-                        String lvobj = String.valueOf(leaveObject);
-                        String date = new Date().toString();
-                        String fname = filename;
-
-                        Log.d(TAG, "reportTurnInLocation(): " + userId +
-                                ",(" + latlon +
-                                ")," + date +
-                                "," + fname +
-                                "," + leaveObject +
-                                ",(" + latlon2 +
-                                ")," + placeName);
-
-                        // TODO: Send image file to server somehow.
-
-                        return null;
-                    }
-
-                    protected void onPostExecute(Void result) {
-                        if (dialog.isShowing()) {
-                            dialog.setMessage(getString(R.string.submitted));
-//                            try {
-//                                wait(1000);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-                            dialog.dismiss();
-                        }
-
-                        /**
-                         * Ideally would like to erase the back stack after going back to HomePageActivity,
-                         * but we overrode HPA's onBackPressed() method, which would preven the user
-                         * from navigating back to this activity.
-                         */
-
-                        ((Activity) mContext).finish();
-                    }
-                }.execute();
+                sendDataToServer();
             }
         });
+    }
+
+    private void sendDataToServer() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid", PreferenceManager
+                    .getDefaultSharedPreferences(FoundActivity.this)
+                    .getString("userid", "NONE"));
+            jsonObject.put("latlon", lat+":"+lon);
+            jsonObject.put("date", new Date().toString());
+            jsonObject.put("description", "");
+            jsonObject.put("leaveObject",leaveObject ? "1" : "0");
+            jsonObject.put("placename",placeName);
+            jsonObject.put("latlon2",latlon2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonObject.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Log.i(TAG, "Attempting to send reported found object info to server.");
+        client.post(mContext,
+                HttpUtil.REPORT_FOUND_OBJECT_ENDPOINT,
+                entity,
+                "application/json",
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                        try {
+                            Log.i(TAG, "Report found object success");
+                            foid = json.getString("objid");
+                            String result = json.getString("Result");
+                            makeToast("Reported found object", Toast.LENGTH_LONG);
+                            dataSource.createObject(foid,
+                                    new Date(date),
+                                    new LatLng(lat,lon),
+                                    leaveObject,
+                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
+                                                                Double.valueOf(latlon2.split(":")[1])) : new LatLng(0,0),
+                                    "",
+                                    filename,
+                                    false);
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            makeToast("Error reporting found object", Toast.LENGTH_LONG);
+                            Log.d(TAG, json.toString());
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                        Log.e(TAG, "Report found object failed: status: " + statusCode);
+                        Log.e(TAG, "Response string: " + responseString);
+                        Log.e(TAG, t.toString());
+                        makeToast("Error reporting found object", Toast.LENGTH_LONG);
+                    }
+                });
+
+        // TODO: Send picture to server.
     }
 
     private void startCameraActivity() {
@@ -301,6 +331,19 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        dataSource.close();
+        super.onPause();
+    }
+
+    @Override
+    public void finish() {
+        dataSource.close();
+
+        super.finish();
     }
 
     @Override

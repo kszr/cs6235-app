@@ -1,10 +1,8 @@
 package edu.gatech.lostandfound;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -14,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -22,8 +21,21 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.Header;
+import edu.gatech.lostandfound.database.ReportedLostObjectDataSource;
+import edu.gatech.lostandfound.util.HttpUtil;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.
@@ -37,10 +49,24 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
     private boolean visible = false;
     private Place selectedPlace = null;
 
+    // db column entries, etc.
+    private String loid = "";
+    private String date = "";
+    private String latlon = "";
+
+    private ReportedLostObjectDataSource dataSource = new ReportedLostObjectDataSource(this);
+    private AsyncHttpClient client = new AsyncHttpClient();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost);
+
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         new GoogleApiClient
             .Builder(this)
@@ -68,63 +94,78 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                 Log.i(TAG, "Clicked 'Confirm'.");
                 buttonGoback.setClickable(false);
                 buttonConf.setClickable(false);
-                reportLostLocation();
+                reportLostObject();
+                finish();
             }
         });
     }
 
-    private void reportLostLocation() {
-        Log.d(TAG,"reportLostLocation: selectedPlace == null? " + (selectedPlace==null));
-        if(selectedPlace == null) {
-            Log.i(TAG,"Nothing to send to server.");
+    private void reportLostObject() {
+        Log.d(TAG, "reportLostObject: selectedPlace == null? " + (selectedPlace == null));
+        if (selectedPlace == null) {
+            Log.i(TAG, "Nothing to send to server.");
             return;
         }
 
-        new AsyncTask<Void, Void, Void>() {
-            private ProgressDialog dialog;
+        latlon = selectedPlace.getLatLng().latitude + ":" + selectedPlace.getLatLng().longitude;
+        date = new Date().toString();
 
-            @Override
-            protected void onPreExecute() {
-                if (dialog == null) {
-                    dialog = new ProgressDialog(mContext);
-                    dialog.setMessage(getString(R.string.submitting));
-                    dialog.setIndeterminate(true);
-                }
-                dialog.show();
-            }
+        sendDataToServer();
+    }
 
-            @Override
-            protected Void doInBackground(Void... params) {
-                // TODO: Send data to server here:
-                //       userid,
-                //       latlon,
-                //       date.
-                String userId = PreferenceManager.getDefaultSharedPreferences(LostActivity.this).getString("userid","NONE");
-                String placename = selectedPlace.getName().toString();
-                String latlon = selectedPlace.getLatLng().latitude+","+selectedPlace.getLatLng().longitude;
-                String date = new Date().toString();
+    private void sendDataToServer() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid", PreferenceManager
+                    .getDefaultSharedPreferences(LostActivity.this)
+                    .getString("userid", "NONE"));
+            jsonObject.put("latlon", latlon);
+            jsonObject.put("date", date);
+            jsonObject.put("description", "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-                Log.d(TAG,"reportLostLocation(): " + userId +
-                        ",(" + latlon +
-                        ")," + date);
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonObject.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-                return null;
-            }
+        Log.i(TAG, "Attempting to send reported lost object info to server.");
+        client.post(mContext,
+                HttpUtil.REPORT_LOST_OBJECT_ENDPOINT,
+                entity,
+                "application/json",
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                        try {
+                            Log.i(TAG, "Report lost object success");
+                            loid = json.getString("objid");
+                            String result = json.getString("Result");
+                            makeToast("Reported lost object", Toast.LENGTH_LONG);
+                            dataSource.createObject(loid,
+                                    new Date(date),
+                                    selectedPlace.getLatLng(),
+                                    false);
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            makeToast("Error reporting lost object", Toast.LENGTH_LONG);
+                            Log.d(TAG, json.toString());
+                            e.printStackTrace();
+                        }
+                    }
 
-            protected void onPostExecute(Void result) {
-                if (dialog.isShowing()) {
-                    dialog.setMessage(getString(R.string.submitted));
-//                    try {
-//                        wait(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-                    dialog.dismiss();
-                }
-
-                ((Activity) mContext).finish();
-            }
-        }.execute();
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                        Log.e(TAG, "Report lost object failed: status: " + statusCode);
+                        Log.e(TAG, "Response string: " + responseString);
+                        Log.e(TAG, t.toString());
+                        makeToast("Error reporting lost object", Toast.LENGTH_LONG);
+                    }
+                });
     }
 
     @Override
@@ -190,6 +231,29 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        dataSource.close();
+        super.onPause();
+    }
+
+    @Override
+    public void finish() {
+        dataSource.close();
+
+        super.finish();
     }
 
     @Override

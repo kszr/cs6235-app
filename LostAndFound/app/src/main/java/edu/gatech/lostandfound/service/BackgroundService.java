@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.loopj.android.http.AsyncHttpClient;
+
 import edu.gatech.lostandfound.PotentialFoundListActivity;
 import edu.gatech.lostandfound.R;
 
@@ -34,13 +36,17 @@ import edu.gatech.lostandfound.R;
 
 public class BackgroundService extends IntentService {
     private static final String TAG = "BackgroundService";
-    private static final String SEND_USER_INFO = "";
-    private static final String REPORT_LOST_OBJECT = "";
-    private static final String REPORT_FOUND_OJECT = "";
-    private static final String SEND_IMAGE = "";
+    private static final String BASE_URL = "http://73.82.210.153:8080/lost_and_found";
+
+    public static final String REGISTER_USER_ENDPOINT = "";
+    public static final String REPORT_LOST_OBJECT_ENDPOINT = BASE_URL + "/report_lost_object";
+    public static final String REPORT_FOUND_OBJECT_ENDPOINT = "";
+    public static final String CLAIM_OBJECT_ENDPOINT = "";
+    public static final String SEND_IMAGE_ENDPOINT = "";
+
+    private static AsyncHttpClient client = new AsyncHttpClient();
 
     private Context mContext = null;
-
 
     public class BackgroundTask extends AsyncTask<String, String, Void> {
         Context mContext = null;
@@ -82,11 +88,7 @@ public class BackgroundService extends IntentService {
 //        new BackgroundTask(mContext).execute();
     }
 
-    public void callService(int work) {
-
-    }
-
-    public String sendDataToServer(String addr, String data) {
+    public String sendDataToServer(String data, String endpoint) {
         return null;
     }
 
@@ -96,20 +98,20 @@ public class BackgroundService extends IntentService {
 
     public void updatePotentialFoundObjects() {
 
-        notifyUser();
+        notifyUser("title","text",PotentialFoundListActivity.class);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void notifyUser() {
+    private void notifyUser(String title, String text, Class<?> activityClass) {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.logo_icon)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+                        .setContentTitle(title)
+                        .setContentText(text);
 
-        Intent resultIntent = new Intent(this, PotentialFoundListActivity.class);
+        Intent resultIntent = new Intent(this, activityClass);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(PotentialFoundListActivity.class);
+        stackBuilder.addParentStack(activityClass);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(

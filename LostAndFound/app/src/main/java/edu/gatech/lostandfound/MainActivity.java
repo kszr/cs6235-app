@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
+        startBackgroundService();
     }
 
     @Override
@@ -117,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 handleSignInResult(result);
             }
         }
+    }
+
+    private void startBackgroundService() {
+
     }
 
     /**

@@ -68,7 +68,7 @@ public class FoundAndTurnInActivity extends CustomActionBarActivity implements G
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Confirm'.");
 
-                String latlon2 = selectedPlace.getLatLng().latitude+","+selectedPlace.getLatLng().longitude;
+                String latlon2 = selectedPlace.getLatLng().latitude+":"+selectedPlace.getLatLng().longitude;
 
                 Intent intent = new Intent();
                 intent.putExtra("latlon2",latlon2);

@@ -12,6 +12,7 @@ public class ReportedLostObject {
     private String lostObjectId;
     private Date date;
     private LatLng latLngLost;
+    private boolean found;
 
     public long getId() {
         return id;
@@ -43,5 +44,13 @@ public class ReportedLostObject {
 
     public void setLatLngLost(LatLng latLngLost) {
         this.latLngLost = latLngLost;
+    }
+
+    public boolean isFound() {
+        return found;
+    }
+
+    public void setFound(boolean found) {
+        this.found = found;
     }
 }
