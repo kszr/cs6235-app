@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class ImageActivity extends CustomActionBarActivity {
     private static final String TAG = "ImageActivity";
-    private static final String IMG_DIR = "myn"; // TODO: Change to 'oth'.
+    private static final String IMG_DIR = "oth"; // TODO: Change to 'oth'.
 
     private String filename;
     private Date date;
@@ -51,16 +51,16 @@ public class ImageActivity extends CustomActionBarActivity {
         assert img != null;
         img.setImageBitmap(photo);
         final Context context = this;
-        img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: The image viewer closes immediately.
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)), "image/*");
-                startActivity(intent);
-            }
-        });
+//        img.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // TODO: The image viewer closes immediately.
+//                Intent intent = new Intent();
+//                intent.setAction(Intent.ACTION_VIEW);
+//                intent.setDataAndType(Uri.fromFile(new File(context.getDir(IMG_DIR, Context.MODE_PRIVATE), filename)), "image/*");
+//                startActivity(intent);
+//            }
+//        });
 
         TextView dt = (TextView) findViewById(R.id.date);
         assert dt != null;

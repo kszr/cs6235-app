@@ -31,7 +31,7 @@ import edu.gatech.lostandfound.database.PotentialFoundObject;
 public class PotentialFoundListActivity extends CustomActionBarActivity {
     private static final String TAG = "PFLActivity";
     private static final int IMAGE_ACTIVITY = 0;
-    private static final String IMG_DIR = "myn"; // Change to "oth".
+    private static final String IMG_DIR = "oth"; // TODO: Change to "oth".
 
     private PotentialFoundDataSource dataSource;
 
@@ -49,7 +49,14 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
 
 //        POPULATEDUMMYLIST();
 
+        getImagesFromServer();
+
         setUpList();
+    }
+
+    // TODO: Get images from server...
+    private void getImagesFromServer() {
+
     }
 
     /**

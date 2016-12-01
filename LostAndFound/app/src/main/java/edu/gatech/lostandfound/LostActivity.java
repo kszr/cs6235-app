@@ -151,7 +151,6 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                                     selectedPlace.getLatLng(),
                                     false);
                         } catch (JSONException e) {
-                            // TODO Auto-generated catch block
                             makeToast("Error reporting lost object", Toast.LENGTH_LONG);
                             Log.d(TAG, json.toString());
                             e.printStackTrace();

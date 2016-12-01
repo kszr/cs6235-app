@@ -196,7 +196,6 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                                     filename,
                                     false);
                         } catch (JSONException e) {
-                            // TODO Auto-generated catch block
                             makeToast("Error reporting found object", Toast.LENGTH_LONG);
                             Log.d(TAG, json.toString());
                             e.printStackTrace();
