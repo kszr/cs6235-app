@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -31,23 +32,43 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.entity.mime.HttpMultipartMode;
+import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
+import cz.msebera.android.httpclient.entity.mime.content.FileBody;
+import cz.msebera.android.httpclient.entity.mime.content.StringBody;
 import edu.gatech.lostandfound.database.ReportedFoundObjectDataSource;
 import edu.gatech.lostandfound.util.HttpUtil;
+
+import static edu.gatech.lostandfound.util.ImageUtil.saveImage;
 
 /**
  * Created by abhishekchatterjee on 10/23/16.
@@ -184,20 +205,23 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                     public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
                         try {
                             Log.i(TAG, "Report found object success");
-                            foid = json.getString("objid");
+//                            foid = json.getString("objid");
 //                            String result = json.getString("Result");
                             makeToast("Reported found object", Toast.LENGTH_LONG);
-                            Log.i(TAG, json.toString());
-                            dataSource.createObject(foid,
-                                    new Date(date),
-                                    new LatLng(lat,lon),
-                                    leaveObject,
-                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
-                                                                Double.valueOf(latlon2.split(":")[1])) : new LatLng(0,0),
-                                    "",
-                                    filename,
-                                    false);
-                        } catch (JSONException e) {
+//                            Log.i(TAG, json.toString());
+//                            dataSource.createObject(foid,
+//                                    new Date(date),
+//                                    new LatLng(lat, lon),
+//                                    leaveObject,
+//                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
+//                                            Double.valueOf(latlon2.split(":")[1])) : new LatLng(0, 0),
+//                                    "",
+//                                    filename,
+//                                    false);
+
+                            // Send picture to server.
+                            sendPictureToServer();
+                        } catch (Exception e) {
                             makeToast("Error reporting found object", Toast.LENGTH_LONG);
                             Log.d(TAG, json.toString());
                             e.printStackTrace();
@@ -212,8 +236,59 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         makeToast("Error reporting found object", Toast.LENGTH_LONG);
                     }
                 });
+    }
 
-        // TODO: Send picture to server.
+    private void sendPictureToServer() {
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+        File mydir = this.getDir(MY_IMG_DIR, Context.MODE_PRIVATE); //Creating an internal dir.
+        File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
+        Log.d(TAG,"filename: " + fileWithinMyDir.getAbsolutePath());
+        StringBody stringBody = null;
+        String boundary =  "*****";
+
+        try {
+            stringBody = new StringBody("");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        builder.addPart("description", stringBody);
+
+        FileBody fileBody = new FileBody(fileWithinMyDir); //image should be a String
+        builder.addPart("found_object_image", fileBody);
+
+        HttpEntity entity = builder.build();
+
+
+        Log.i(TAG,"Attempting to upload image to sever");
+        client.post(this,
+                HttpUtil.SEND_IMAGE_ENDPOINT,
+                entity,
+                "multipart/form-data;boundary="+boundary,
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                        try {
+                            Log.i(TAG, "Upload found object image success");
+                            makeToast("Uploaded image to server", Toast.LENGTH_LONG);
+                            Log.i(TAG, json.toString());
+                        } catch (Exception e) {
+                            makeToast("Error uploading image", Toast.LENGTH_LONG);
+                            Log.d(TAG, json.toString());
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                        Log.e(TAG, "Upload found object image failed: status: " + statusCode);
+                        Log.e(TAG, "Response string: " + responseString);
+                        Log.e(TAG, t.toString());
+                        makeToast("Error uploading image", Toast.LENGTH_LONG);
+                    }
+                });
     }
 
     private void startCameraActivity() {
@@ -306,32 +381,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             lat = location.getLatitude();
             lon = location.getLongitude();
         }
-        saveImage(photo);
+        saveImage(this,photo,MY_IMG_DIR,filename="tah.png");
         Log.d(TAG, "latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
-    }
-
-    private void saveImage(Bitmap bmp) {
-        File mydir = this.getDir(MY_IMG_DIR, Context.MODE_PRIVATE); //Creating an internal dir.
-
-        // TODO: Come up with unique filenames.
-        filename = "tah.png";
-        File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(fileWithinMyDir);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                Log.d(TAG,"Saved image: " + MY_IMG_DIR + "/" + filename);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

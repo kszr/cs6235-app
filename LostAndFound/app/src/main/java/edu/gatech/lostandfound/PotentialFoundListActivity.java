@@ -88,6 +88,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
                 images.add(photo);
         }
 
+        Log.d(TAG,"Image list size = " + images.size());
         TextView tv = (TextView) findViewById(R.id.no_objects_to_show);
         GridView gridView = (GridView) findViewById(R.id.potential_found_list);
         if(images.size() == 0) {

@@ -1,13 +1,17 @@
 package edu.gatech.lostandfound.runnable;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -15,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +34,8 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import edu.gatech.lostandfound.database.PotentialFoundDataSource;
 import edu.gatech.lostandfound.database.PotentialFoundObject;
 import edu.gatech.lostandfound.util.HttpUtil;
+
+import static edu.gatech.lostandfound.util.ImageUtil.saveImage;
 
 /**
  * Created by abhishekchatterjee on 12/1/16.
@@ -94,11 +101,15 @@ public class PotentialFoundRunnable implements Runnable {
                 entity,
                 "application/json",
                 new JsonHttpResponseHandler() {
+                    @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray jsonArray) {
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
                         try {
                             Log.i(TAG, "Report lost object success");
-                            JSONArray objArray = jsonArray.getJSONArray(1);
+                            JSONArray names = json.names();
+                            JSONArray jsonArray = json.toJSONArray(names);
+                            JSONArray objArray = jsonArray.getJSONArray(0);
+                            Log.i(TAG, objArray.toString());
                             updateDBEntries(objArray);
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
@@ -176,5 +187,46 @@ public class PotentialFoundRunnable implements Runnable {
         // TODO: Get images from server
 
         return new ArrayList<>();
+    }
+
+    private void getImageFromServer() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+//            jsonObject.put("userid", PreferenceManager
+//                    .getDefaultSharedPreferences(FoundActivity.this)
+//                    .getString("userid", "NONE"));
+            jsonObject.put("userid","amit");    // TODO: Change
+            jsonObject.put("filename","/home/amit/images/2.jpeg"); // TODO: Change
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonObject.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        client.get(mContext, HttpUtil.GET_IMAGE_ENDPOINT, entity, "application/json", new FileAsyncHttpResponseHandler(mContext) {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
+                Log.i(TAG,"Failure - file");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, File file) {
+                Log.i(TAG, "Success - file");
+                Bitmap bmp = null;
+                try {
+                    bmp = BitmapFactory.decodeStream(new FileInputStream(file));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                Log.i(TAG,file.getAbsolutePath());
+                saveImage(mContext,bmp,"oth","tah.png");
+
+            }
+        });
     }
 }
