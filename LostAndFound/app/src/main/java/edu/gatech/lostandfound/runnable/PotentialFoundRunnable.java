@@ -24,8 +24,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -150,8 +148,6 @@ public class PotentialFoundRunnable implements Runnable {
                 filenames.add(filename);
 
                 dataSource.createObject(foid,loid,date,latlon,!leaveObject,latlon2,placename,filename);
-                // TODO: Figure out if I need to change db format.
-                // TODO: Also, insert a new object into db.
 
 //                dataSource.close();
 
@@ -161,12 +157,6 @@ public class PotentialFoundRunnable implements Runnable {
         }
 
         getImagesFromServer(filenames);
-    }
-
-    private List<Bitmap> getImages() {
-        // TODO: Get images from server
-
-        return new ArrayList<>();
     }
 
     private void getImagesFromServer(List<String> filenames) {
@@ -180,7 +170,7 @@ public class PotentialFoundRunnable implements Runnable {
             jsonObject.put("userid", PreferenceManager
                     .getDefaultSharedPreferences(mContext)
                     .getString("userid", "NONE"));
-            jsonObject.put("filename",filename); // TODO: Change
+            jsonObject.put("filename",filename);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -208,7 +198,7 @@ public class PotentialFoundRunnable implements Runnable {
                     e.printStackTrace();
                 }
                 Log.i(TAG,file.getAbsolutePath());
-//                saveImage(mContext,bmp,IMG_DIR_OTH,filename);
+                saveImage(mContext,bmp,IMG_DIR_OTH,filename);
             }
         });
     }

@@ -22,10 +22,8 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,8 +31,8 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Date;
 
-import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import edu.gatech.lostandfound.database.ReportedLostObjectDataSource;
 import edu.gatech.lostandfound.util.HttpUtil;
 
@@ -120,7 +118,6 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
             jsonObject.put("userid", PreferenceManager
                     .getDefaultSharedPreferences(LostActivity.this)
                     .getString("userid", "NONE"));
-//            jsonObject.put("userid","abhishek"); // TODO: Replace constant.
             jsonObject.put("latlon", latlon);
             jsonObject.put("date", date);
             jsonObject.put("description", "");

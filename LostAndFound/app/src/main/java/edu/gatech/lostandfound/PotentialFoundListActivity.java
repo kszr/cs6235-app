@@ -9,17 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.File;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import edu.gatech.lostandfound.adapter.ImageAdapter;
@@ -32,7 +27,7 @@ import edu.gatech.lostandfound.database.PotentialFoundObject;
 public class PotentialFoundListActivity extends CustomActionBarActivity {
     private static final String TAG = "PFLActivity";
     private static final int IMAGE_ACTIVITY = 0;
-    private static final String IMG_DIR = "oth"; // TODO: Change to "oth".
+    private static final String IMG_DIR = "oth";
 
     private PotentialFoundDataSource dataSource;
 
@@ -48,33 +43,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
             e.printStackTrace();
         }
 
-//        POPULATEDUMMYLIST();
-
         setUpList();
-    }
-
-    /**
-     * DUMMY METHOD TO POPULATE DB.
-     */
-    private void POPULATEDUMMYLIST() {
-//        dataSource.createObject("pathtoimg.png", new Date(116,10,18),new LatLng(30.0,30.0));
-        dataSource.createObject("f123",
-                "l456",
-                new Date(116, 10, 29),
-                new LatLng(33.7831017, -84.396623),
-                true,
-                new LatLng(30.0, -30.0),
-                "Clouds",
-                "tah.png");
-
-        dataSource.createObject("f124",
-                "l457",
-                new Date(116, 10, 18),
-                new LatLng(30.0, 30.0),
-                false,
-                null,
-                "",
-                "pathtoimg.png");
     }
 
     private void setUpList() {
@@ -104,7 +73,6 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
         }
 
         ImageAdapter imageAdapter = new ImageAdapter(this,images);
-//        ArrayAdapter<Bitmap> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, images);
 
         assert gridView != null;
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

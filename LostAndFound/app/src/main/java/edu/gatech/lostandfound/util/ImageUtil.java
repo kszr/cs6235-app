@@ -17,13 +17,11 @@ public class ImageUtil {
 
     }
 
-    public static void saveImage(Context context,Bitmap bmp,String dir,String filename) {
+    public static void saveImage(Context context, Bitmap bmp, String dir, String filename) {
         File mydir = context.getDir(dir, Context.MODE_PRIVATE); //Creating an internal dir.
-
-        // TODO: Come up with unique filenames.
-//        filename = "tah.png";
         File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
         FileOutputStream out = null;
+
         try {
             out = new FileOutputStream(fileWithinMyDir);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);

@@ -1,20 +1,16 @@
 package edu.gatech.lostandfound;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,42 +20,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.entity.mime.HttpMultipartMode;
 import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
@@ -94,6 +71,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private Place place = null;
     private String placeName = "";
     private boolean onMap = false;
+    private boolean flag = true;
 
     private AsyncHttpClient client = new AsyncHttpClient();
     private ReportedFoundObjectDataSource dataSource = new ReportedFoundObjectDataSource(this);
@@ -168,6 +146,10 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
                 sendPictureToServer();
 
+                while(flag);
+
+                finish();
+
             }
         });
     }
@@ -206,7 +188,6 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                     public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
                         try {
                             Log.i(TAG, "Report found object success");
-//                            String result = json.getString("Result");
                             foid = json.getString("objid");
 
                             makeToast("Reported found object", Toast.LENGTH_LONG);
@@ -220,11 +201,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                                     "",
                                     filename,
                                     false);
-                            // TODO: Save image as foid.png.
-                            // Send picture to server.
-                            sendPictureToServer();
+
+                            flag = false;
                         } catch (Exception e) {
                             makeToast("Error reporting found object", Toast.LENGTH_LONG);
+                            flag = false;
                             Log.d(TAG, json.toString());
                             e.printStackTrace();
                         }
@@ -236,6 +217,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         Log.e(TAG, "Response string: " + responseString);
                         Log.e(TAG, t.toString());
                         makeToast("Error reporting found object", Toast.LENGTH_LONG);
+                        flag = false;
                     }
                 });
     }
@@ -279,10 +261,10 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                             makeToast("Uploaded image to server", Toast.LENGTH_LONG);
                             Log.i(TAG, json.toString());
                             filename = json.getString("Filename");
-
                             sendDataToServer();
                         } catch (Exception e) {
                             makeToast("Error uploading image", Toast.LENGTH_LONG);
+                            flag = false;
                             Log.d(TAG, json.toString());
                             e.printStackTrace();
                         }
@@ -293,6 +275,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         Log.e(TAG, "Upload found object image failed: status: " + statusCode);
                         Log.e(TAG, "Response string: " + responseString);
                         Log.e(TAG, t.toString());
+                        flag = false;
                         makeToast("Error uploading image", Toast.LENGTH_LONG);
                     }
                 });

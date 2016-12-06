@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
@@ -34,7 +32,7 @@ import edu.gatech.lostandfound.util.HttpUtil;
  */
 public class ImageActivity extends CustomActionBarActivity {
     private static final String TAG = "ImageActivity";
-    private static final String IMG_DIR = "oth"; // TODO: Change to 'oth'.
+    private static final String IMG_DIR = "oth";
 
     private String filename;
     private Date date;

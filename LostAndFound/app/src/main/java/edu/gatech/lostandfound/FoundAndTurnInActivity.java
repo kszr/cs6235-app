@@ -1,12 +1,9 @@
 package edu.gatech.lostandfound;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
@@ -22,8 +19,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
-
-import java.util.Date;
 
 
 /**
