@@ -22,6 +22,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONException;
@@ -94,7 +95,6 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                 buttonGoback.setClickable(false);
                 buttonConf.setClickable(false);
                 reportLostObject();
-                finish();
             }
         });
     }
@@ -125,6 +125,8 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
             e.printStackTrace();
         }
 
+        Log.d(TAG,jsonObject.toString());
+
         StringEntity entity = null;
         try {
             entity = new StringEntity(jsonObject.toString());
@@ -137,63 +139,41 @@ public class LostActivity extends CustomActionBarActivity implements GoogleApiCl
                 HttpUtil.REPORT_LOST_OBJECT_ENDPOINT,
                 entity,
                 "application/json",
-//                new JsonHttpResponseHandler() {
-//                    @Override
-//                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
-//                        try {
-//                            Log.i(TAG, "Report lost object success");
-//                            loid = json.getString("objid");
-////                            String result = json.getString("Result");
-//                            makeToast("Reported lost object", Toast.LENGTH_LONG);
-//                            Log.i(TAG, json.toString());
-//                            dataSource.createObject(loid,
-//                                    new Date(date),
-//                                    selectedPlace.getLatLng(),
-//                                    false);
-//                        } catch (JSONException e) {
-//                            makeToast("Error reporting lost object", Toast.LENGTH_LONG);
-//                            Log.d(TAG, json.toString());
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
-//                        Log.e(TAG, "Report lost object failed: status: " + statusCode);
-//                        Log.e(TAG, "Response string: " + responseString);
-//                        Log.e(TAG, t.toString());
-//                        makeToast("Error reporting lost object", Toast.LENGTH_LONG);
-//                    }
-//                });
-                new TextHttpResponseHandler() {
+                new JsonHttpResponseHandler() {
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Log.e(TAG, "Report lost object failed: status: " + statusCode);
-                        Log.e(TAG, "Response string: " + responseString);
-                        Log.e(TAG, throwable.toString());
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
+                        try {
+                            Log.i(TAG, "Report lost object success");
+
+                            if(json.getString("Result").equals("Failure"))
+                                throw new Exception();
+
+                            loid = json.getString("objid");
+
+                            makeToast("Reported lost object", Toast.LENGTH_LONG);
+                            Log.i(TAG, json.toString());
+                            dataSource.createObject(loid,
+                                    new Date(date),
+                                    selectedPlace.getLatLng(),
+                                    false);
+                            ((Activity) mContext).finish();
+                        } catch (Exception e) {
+                            makeToast("Error reporting lost object", Toast.LENGTH_LONG);
+                            Log.d(TAG, json.toString());
+                            e.printStackTrace();
+                            ((Activity) mContext).finish();
+                        }
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                        try {
-                            Log.i(TAG, "Report lost object success");
-                            Log.i(TAG, responseString);
-//                            loid = json.getString("objid");
-////                            String result = json.getString("Result");
-//                            makeToast("Reported lost object", Toast.LENGTH_LONG);
-//                            Log.i(TAG, json.toString());
-//                            dataSource.createObject(loid,
-//                                    new Date(date),
-//                                    selectedPlace.getLatLng(),
-//                                    false);
-                        } catch (Exception e) {
-                            makeToast("Error reporting lost object", Toast.LENGTH_LONG);
-//                            Log.d(TAG, json.toString());
-                            e.printStackTrace();
-                        }
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
+                        Log.e(TAG, "Report lost object failed: status: " + statusCode);
+                        Log.e(TAG, "Response string: " + responseString);
+                        Log.e(TAG, t.toString());
+                        makeToast("Error reporting lost object", Toast.LENGTH_LONG);
+                        ((Activity) mContext).finish();
                     }
-                }
-        );
+                });
     }
 
     @Override

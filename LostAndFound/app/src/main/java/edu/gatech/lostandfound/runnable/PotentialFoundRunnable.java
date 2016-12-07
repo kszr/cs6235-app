@@ -94,7 +94,7 @@ public class PotentialFoundRunnable implements Runnable {
         }
 
         Log.i(TAG, "Attempting to get potential found list from server.");
-        client.get(mContext,
+        client.post(mContext,
                 HttpUtil.GET_POTENTIAL_FOUND_OBJECTS_ENDPOINT,
                 entity,
                 "application/json",
@@ -110,6 +110,7 @@ public class PotentialFoundRunnable implements Runnable {
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
                             e.printStackTrace();
+//                            dataSource.close();
                         }
                     }
 
@@ -131,6 +132,8 @@ public class PotentialFoundRunnable implements Runnable {
         }
 
         List<String> filenames = new ArrayList<>();
+
+        Log.d(TAG,"JSONArray length = " + jsonArray.length());
         for(int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject json = jsonArray.getJSONObject(i);
@@ -147,12 +150,15 @@ public class PotentialFoundRunnable implements Runnable {
                 LatLng latlon2 = new LatLng(json.getDouble("f_lat2"),json.getDouble("f_lon2"));
                 filenames.add(filename);
 
-                dataSource.createObject(foid,loid,date,latlon,!leaveObject,latlon2,placename,filename);
+                String fsplit[] = filename.split("/");
+                String fname = fsplit[fsplit.length-1];
+                dataSource.createObject(foid, loid, date, latlon, !leaveObject, latlon2, placename, fname);
 
 //                dataSource.close();
 
             } catch (JSONException e) {
                 e.printStackTrace();
+//                dataSource.close();
             }
         }
 
@@ -160,8 +166,10 @@ public class PotentialFoundRunnable implements Runnable {
     }
 
     private void getImagesFromServer(List<String> filenames) {
-        for(String filename : filenames)
+        for(String filename : filenames) {
+            Log.d(TAG,filename);
             getImageFromServer(filename);
+        }
     }
 
     private void getImageFromServer(final String filename) {
@@ -182,10 +190,10 @@ public class PotentialFoundRunnable implements Runnable {
             e.printStackTrace();
         }
 
-        client.get(mContext, HttpUtil.GET_IMAGE_ENDPOINT, entity, "application/json", new FileAsyncHttpResponseHandler(mContext) {
+        client.post(mContext, HttpUtil.GET_IMAGE_ENDPOINT, entity, "application/json", new FileAsyncHttpResponseHandler(mContext) {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                Log.i(TAG,"Failure - file");
+                Log.i(TAG, "Failure - file");
             }
 
             @Override
@@ -193,12 +201,22 @@ public class PotentialFoundRunnable implements Runnable {
                 Log.i(TAG, "Success - file");
                 Bitmap bmp = null;
                 try {
+//                    bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
                     bmp = BitmapFactory.decodeStream(new FileInputStream(file));
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Log.i(TAG,file.getAbsolutePath());
-                saveImage(mContext,bmp,IMG_DIR_OTH,filename);
+
+                String fsplit[] = filename.split("/");
+                String fname = fsplit[fsplit.length - 1];
+
+                Log.i(TAG, fname);
+
+                if (bmp == null) {
+                    Log.w(TAG, "Bitmap is null!");
+                } else {
+                    saveImage(mContext, bmp, IMG_DIR_OTH, fname);
+                }
             }
         });
     }

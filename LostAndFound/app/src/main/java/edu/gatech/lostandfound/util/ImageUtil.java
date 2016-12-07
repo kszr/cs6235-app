@@ -34,6 +34,7 @@ public class ImageUtil {
                 }
                 Log.d("SaveImage", "Saved image: " + fileWithinMyDir.getAbsolutePath());
             } catch (IOException e) {
+                Log.e("SaveImage", "Failed to save image");
                 e.printStackTrace();
             }
         }

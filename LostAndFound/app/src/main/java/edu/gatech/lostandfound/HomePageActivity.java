@@ -20,10 +20,6 @@ public class HomePageActivity extends CustomActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setUpButtonListeners();
-        setUpHandler();
-    }
-
-    private void setUpHandler() {
     }
 
     private void setUpButtonListeners() {

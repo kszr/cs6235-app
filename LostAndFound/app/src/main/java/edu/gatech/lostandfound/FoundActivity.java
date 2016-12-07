@@ -2,6 +2,7 @@ package edu.gatech.lostandfound;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,14 +27,17 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
@@ -72,6 +76,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
     private String placeName = "";
     private boolean onMap = false;
     private boolean flag = true;
+    private ProgressDialog mProgressDialog;
 
     private AsyncHttpClient client = new AsyncHttpClient();
     private ReportedFoundObjectDataSource dataSource = new ReportedFoundObjectDataSource(this);
@@ -113,6 +118,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             public void onClick(View v) {
                 Log.i(TAG, "Clicked 'Lost and Found'.");
                 leaveObject = false;
+
+                Button submit = (Button) findViewById(R.id.submit_found_button);
+                assert submit != null;
+                submit.setVisibility(View.GONE);
+
                 Intent intent = new Intent(FoundActivity.this, FoundAndTurnInActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
@@ -146,20 +156,19 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
                 sendPictureToServer();
 
-                while(flag);
-
-                finish();
-
             }
         });
     }
 
     private void sendDataToServer() {
+        showProgressDialog("Sending report to server…");
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("userid", PreferenceManager
                     .getDefaultSharedPreferences(FoundActivity.this)
                     .getString("userid", "NONE"));
+//            jsonObject.put("userid","amit");
             jsonObject.put("latlon",lat+":"+lon);
             jsonObject.put("date", new Date().toString());
             jsonObject.put("description", "");
@@ -170,7 +179,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        Log.i(TAG, jsonObject.toString());
         StringEntity entity = null;
         try {
             entity = new StringEntity(jsonObject.toString());
@@ -187,7 +196,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
                         try {
-                            Log.i(TAG, "Report found object success");
+                            Log.d(TAG, "Report found object success: " + statusCode);
+
+                            if(json.getString("Result").equals("Failure"))
+                                throw new Exception("Result: Failure");
+
                             foid = json.getString("objid");
 
                             makeToast("Reported found object", Toast.LENGTH_LONG);
@@ -196,18 +209,19 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                                     new Date(date),
                                     new LatLng(lat, lon),
                                     leaveObject,
-                                    latlon2.equals(":") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
+                                    latlon2.equals("0:0") ? new LatLng(Double.valueOf(latlon2.split(":")[0]),
                                             Double.valueOf(latlon2.split(":")[1])) : new LatLng(0, 0),
                                     "",
                                     filename,
                                     false);
-
                             flag = false;
+                            ((Activity) mContext).finish();
                         } catch (Exception e) {
                             makeToast("Error reporting found object", Toast.LENGTH_LONG);
                             flag = false;
                             Log.d(TAG, json.toString());
                             e.printStackTrace();
+                            ((Activity) mContext).finish();
                         }
                     }
 
@@ -218,8 +232,11 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         Log.e(TAG, t.toString());
                         makeToast("Error reporting found object", Toast.LENGTH_LONG);
                         flag = false;
+                        ((Activity) mContext).finish();
                     }
                 });
+
+        hideProgressDialog();
     }
 
     private void sendPictureToServer() {
@@ -230,9 +247,12 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
         File mydir = this.getDir(MY_IMG_DIR, Context.MODE_PRIVATE); //Creating an internal dir.
         File fileWithinMyDir = new File(mydir, filename); //Getting a file within the dir.
-        Log.d(TAG,"filename: " + fileWithinMyDir.getAbsolutePath());
+        Log.d(TAG,"filename in sendPTS: " + filename);
+        Log.d(TAG, "filename: " + fileWithinMyDir.getAbsolutePath());
         StringBody stringBody = null;
         String boundary =  "*****";
+
+        showProgressDialog("Uploading image");
 
         try {
             stringBody = new StringBody("");
@@ -247,12 +267,21 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
         HttpEntity entity = builder.build();
 
+        RequestParams params = new RequestParams();
+        try {
+            //"photos" is Name of the field to identify file on server
+            params.put("description", "");
+            params.put("found_object_image", fileWithinMyDir);
+        } catch (FileNotFoundException e) {
+            //TODO: Handle error
+            Log.e(TAG, "FNFException");
+            e.printStackTrace();
+        }
 
-        Log.i(TAG,"Attempting to upload image to sever");
+        Log.i(TAG,"Attempting to upload image to server");
         client.post(this,
                 HttpUtil.SEND_IMAGE_ENDPOINT,
-                entity,
-                "multipart/form-data;boundary="+boundary,
+                params,
                 new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
@@ -260,7 +289,9 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                             Log.i(TAG, "Upload found object image success");
                             makeToast("Uploaded image to server", Toast.LENGTH_LONG);
                             Log.i(TAG, json.toString());
-                            filename = json.getString("Filename");
+//                            String bob[] = json.getString("Filename:").split("/");
+                            filename = json.getString("Filename:");
+                            Log.d(TAG, "Filename: " + filename);
                             sendDataToServer();
                         } catch (Exception e) {
                             makeToast("Error uploading image", Toast.LENGTH_LONG);
@@ -279,6 +310,7 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
                         makeToast("Error uploading image", Toast.LENGTH_LONG);
                     }
                 });
+        hideProgressDialog();
     }
 
     private void startCameraActivity() {
@@ -347,12 +379,8 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
 
         Log.i(TAG, "Captured image.");
 
-        /**
-         * Android does not support Exif information on byte streams, and lat/lon information
-         * can only be obtained from image files. As a result, we use the LocationManager
-         * to get location data.
-         */
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -371,8 +399,48 @@ public class FoundActivity extends CustomActionBarActivity implements GoogleApiC
             lat = location.getLatitude();
             lon = location.getLongitude();
         }
-        saveImage(this,photo,MY_IMG_DIR,filename="tah.png");
+        saveImage(this,photo,MY_IMG_DIR,filename=getRandomString()+".png"); // We don't really care about filename.
         Log.d(TAG, "latitude: " + (lat == null ? "null" : lat.toString()) + "; longitude: " + (lon == null ? "null" : lon.toString()));
+    }
+
+    protected String getRandomString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) {
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+
+    private void showProgressDialog(String msg) {
+        Log.i(TAG, "Showing progress dialog.");
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(msg);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
+        }
+
+        Log.i(TAG, "Hiding progress dialog");
+    }
+
+    @Override
+    protected void onResume() {
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.onResume();
     }
 
     @Override

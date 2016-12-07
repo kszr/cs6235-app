@@ -52,6 +52,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
 
         for(PotentialFoundObject object : objectList) {
             String filename = object.getFilename();
+            Log.d(TAG,"Filename: " + filename);
             Bitmap photo = getPhoto(filename);
             if(photo != null)
                 images.add(photo);
@@ -61,11 +62,13 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
         TextView tv = (TextView) findViewById(R.id.no_objects_to_show);
         GridView gridView = (GridView) findViewById(R.id.potential_found_list);
         if(images.size() == 0) {
+            Log.i(TAG, "Image list size is zero");
             assert tv != null;
             tv.setVisibility(View.VISIBLE);
             assert gridView != null;
             gridView.setVisibility(View.GONE);
         } else {
+            Log.i(TAG, "Image list size is non-zero");
             assert tv != null;
             tv.setVisibility(View.GONE);
             assert gridView != null;
@@ -108,6 +111,7 @@ public class PotentialFoundListActivity extends CustomActionBarActivity {
             return null;
         }
         String pathname = f.getAbsolutePath();
+        Log.d(TAG, "Abs path of image: " + pathname);
         Bitmap bmp = BitmapFactory.decodeFile(pathname);
         Log.d(TAG, "Opened image " + IMG_DIR + "/" + filename);
         return bmp;

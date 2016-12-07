@@ -161,6 +161,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             e.printStackTrace();
         }
 
+        Log.i(TAG, jsonObject.toString());
+
         StringEntity entity = null;
         try {
             entity = new StringEntity(jsonObject.toString());
